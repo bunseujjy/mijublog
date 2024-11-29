@@ -2,14 +2,14 @@
 import { Camera } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-  
+
 const tabs = [
   { label: 'Personal Information', value: 'personal' },
   { label: 'Security', value: 'security' },
   { label: 'Notifications', value: 'notifications' },
   { label: 'Appearance', value: 'appearance' },
 ]
-  
+
 const client = useSupabaseClient()
 const color = useColorMode()
 const toast = useToast()
