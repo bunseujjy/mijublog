@@ -11,7 +11,7 @@ const route = useRoute()
 const comment_id = computed(() => route.params.comment_id)
 const replies_id = computed(() => route.params.repliesId)
 const post_id = computed(() => route.params.id)
-const currentUser = ref()
+const {user: currentUser} = useAuth()
 const users = ref<User[]>([])
 const comment = ref<Comment | null>(null)
 const replies = ref<Replies[]>([])
@@ -32,7 +32,7 @@ const addReply = async (commentId: string, replyText: string, parentReplyId: str
   const reply = await postReply(
     blog_db.value?.id as string,
     comment_id.value as string,
-    currentUser.value.id,
+    currentUser.value?.id as string,
     replyText,
     parentReplyId
   );

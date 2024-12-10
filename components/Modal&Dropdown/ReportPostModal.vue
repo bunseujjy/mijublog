@@ -8,7 +8,7 @@ import type { User } from '@supabase/supabase-js';
 
 const props = defineProps<{
     blog_db: BlogData,
-    currentUser: User
+    currentUser: User | null
 }>();
 const emit = defineEmits(['closeModal'])
 const reason = ref('')
@@ -27,11 +27,11 @@ const submitReport = async () => {
       try {
         await emailReportingPost(
           props.blog_db.id,
-          props.currentUser.id,
-          reason.value,
+          props.currentUser?.id as string,
+          reason.value, 
           description.value,
-          props.currentUser.user_metadata.email,
-          props.currentUser.user_metadata.username,
+          props.currentUser?.user_metadata.email,
+          props.currentUser?.user_metadata.username,
           props.blog_db.title
         );
         closeModal();

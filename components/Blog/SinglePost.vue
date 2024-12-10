@@ -1,45 +1,30 @@
 <script setup lang="ts">
   import type { BlogData } from "~/lib/type";
-  import type { PropType } from "vue";
   import { formatDateToNow } from "~/lib/formattedDate";
   import {
     Bookmark,
     GripVertical,
     HandHeart,
+    Link2,
     MessageCircleDashed,
-    MessageSquareShare,
   } from "lucide-vue-next";
   import type { User } from "@supabase/supabase-js";
   import { likePost } from "~/server/post/likePost";
-  import { useToast } from "vue-toastification";
-  import { savePost } from "~/server/post/savePost";
+  import { useToast } from "../ui/toast";
 
-  const props = defineProps({
-    blog_db: {
-      type: Object as PropType<BlogData>,
-      required: true,
-    },
-    currentUser: {
-      type: Object as PropType<User>,
-      required: true,
-    },
-    authorDetails: {
-      type: Object as PropType<User>,
-      required: true
-    },
-    users: {
-      type: Object as PropType<User[]>,
-      required: true
-    }
-  });
+  const props = defineProps<{
+    blog_db: BlogData;
+    currentUser: User | null;
+    users: User[];
+  }>();
   const route = useRoute()
-  const toast = useToast()
+  const {toast} = useToast()
   const linkToCopy = computed(() => {
     return `${window.location.origin}${route.path}`;
   });
   const copyLink = async () => {
     await navigator.clipboard.writeText(linkToCopy.value)
-    toast.success("Link copied to clipboard")
+    toast({description: "Link copied to clipboard"});
   }
   const client = useSupabaseClient()
 
@@ -49,8 +34,7 @@
       .on('postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'blog_posts' },
         (payload) => {
-          const { new: newRecord, old: oldRecord } = payload;
-
+          const { new: newRecord } = payload;
           // Check if the updated record matches the current blog post
           if (newRecord.id === props.blog_db.id) {
             // Update the likes_count directly in the local state
@@ -74,10 +58,10 @@
       {{ props.blog_db.subtitle }}
     </p>
     <div class="flex items-center mt-5">
-      <NuxtImg :src="authorDetails?.user_metadata.profile_url" alt="profile"
+      <NuxtImg :src="findPostAuthor(users, props.blog_db.author_id)?.user_metadata.profile_url" alt="profile"
         class="size-[50px] rounded-full bg-center object-cover" />
-      <div class="flex flex-col pl-2">
-        <h1 class="text-black dark:text-white">{{ authorDetails?.user_metadata?.username }}</h1>
+      <div class="flex flex-col items-start pl-2">
+          <NuxtLink class="w-auto inline-block text-black dark:text-white hover:text-opacity-60 transform duration-300" :to="`/@${findPostAuthor(users, props.blog_db.author_id)?.user_metadata?.username}`">{{ findPostAuthor(users, props.blog_db.author_id)?.user_metadata?.username }}</NuxtLink>
         <p class="text-[#6B6B6B] dark:text-white dark:text-opacity-80 font-semibold">
           {{ props.blog_db.estimated_reading_time || 0 }} mn read
           <span> · </span>
@@ -92,7 +76,7 @@
             <Tooltip>
               <TooltipTrigger>
                 <p class="flex items-center text-black dark:text-white cursor-pointer hover:opacity-60 transform duration-300"
-                  @click="() => likePost(1, props.blog_db.id, currentUser?.id)">
+                  @click="() => likePost(1, props.blog_db.id, currentUser?.id ?? '')">
                   <HandHeart />
                   <span class="pl-2">{{ props.blog_db.likes_count }}</span>
                 </p>
@@ -135,7 +119,7 @@
               <TooltipTrigger>
                 <Button type="button" @click="copyLink"
                   class="text-black dark:text-white cursor-pointer hover:opacity-60 transform duration-300 align-bottom">
-                  <MessageSquareShare />
+                  <Link2 />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -164,7 +148,6 @@
     <div class="my-10">
       <div v-html="props.blog_db.content" class="text-black dark:text-white text-md md:text-xl space-y-8"></div>
     </div>
-    <Comment :blog_db="props.blog_db" :currentUser="props.currentUser" :authorDetails="authorDetails"
-      :users="props.users" />
+    <Comment :blog_db="props.blog_db" :currentUser="props.currentUser" :users="props.users" />
   </div>
 </template>

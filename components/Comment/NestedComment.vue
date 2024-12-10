@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   comment: Comment,
-  currentUser: User,
+  currentUser: User | null,
   reply: Replies,
   blog_db: BlogData
   replyTree: { [key: string]: Replies[] },
@@ -17,14 +17,13 @@ import type { User } from '@supabase/supabase-js';
 import { CircleMinus, CirclePlus, Ellipsis, Eraser, FilePenLine, Link, MessageCircleWarning } from 'lucide-vue-next';
 import { type Replies, type Comment, type BlogData } from '~/lib/type';
 import { likeReplies } from '~/server/comments/likeReplies';
-import * as pkg from "vue-toastification"
 import { deleteComment } from '~/server/comments/deleteComment';
-const { useToast } = pkg as any
+import { useToast } from '../ui/toast';
 
-const emit = defineEmits(['reply', 'toggleAction', 'closeModalIfOutsideClick', 'handleDeletingReply']);
+const emit = defineEmits(['reply', 'toggleAction', 'onClickOutsideHandler', 'handleDeletingReply']);
 const client = useSupabaseClient()
 const route = useRoute();
-const toast = useToast()
+const {toast} = useToast()
 const isReplying = ref(false);
 const isExpanded = ref(true);
 const replyText = ref('');
@@ -33,6 +32,30 @@ const shareRef = ref<HTMLElement | null>(null);
 const moreRef = ref<HTMLElement | null>(null);
 const editRef = ref<HTMLElement | null>(null);
 const reportRef = ref<HTMLElement | null>(null);
+const ignoreElRef = ref();
+
+const onClickOutsideHandler = [
+  (event: any) => {
+    const isClickInsideModals = [shareRef, moreRef, editRef, reportRef].some(ref => 
+    ref.value && ref.value.contains(event.target as Node)
+  );
+  if (!isClickInsideModals) {
+    if (props.isOpen[props.reply.id]) {
+      toggleAction(props.reply.id, 'share');
+    }
+    if (props.isOpenMore[props.reply.id]) {
+      toggleAction(props.reply.id, 'more');
+    }
+    if (props.isOpenEdit[props.reply.id]) {
+      toggleAction(props.reply.id, 'edit');
+    }
+    if (props.isOpenReport[props.reply.id]) {
+      toggleAction(props.reply.id, 'report');
+    }
+  }
+  },
+  { ignore: [ignoreElRef] },
+]
 
 const submitReply = () => {
   if (replyText.value.trim()) {
@@ -57,7 +80,7 @@ const toggleAction = (id: string, action: 'share' | 'more' | 'report' | 'edit') 
 };
 
 const handleLikeReply = async () => {
-  await likeReplies(1, props.reply.id, props.currentUser.id);
+  await likeReplies(1, props.reply.id, props.currentUser?.id as string);
 };
 
 const linkToCopy = computed(() => {
@@ -72,7 +95,7 @@ const linkToCopy = computed(() => {
 const copyLink = async () => {
   try {
     await navigator.clipboard.writeText(linkToCopy.value);
-    toast.success('Link copied')
+    toast({description: 'Link copied'})
   } catch (error) {
     console.error("Failed to copy link:", error);
   }
@@ -89,27 +112,6 @@ const hasChildReplies = computed(() => {
 const isSecondLevel = computed(() => {
   return props.reply.parent_reply_id !== null;
 });
-
-const closeModalIfOutsideClick = (event: MouseEvent) => {
-  const isClickInsideModals = [shareRef, moreRef, editRef, reportRef].some(ref => 
-    ref.value && ref.value.contains(event.target as Node)
-  );
-
-  if (!isClickInsideModals) {
-    if (props.isOpen[props.reply.id]) {
-      toggleAction(props.reply.id, 'share');
-    }
-    if (props.isOpenMore[props.reply.id]) {
-      toggleAction(props.reply.id, 'more');
-    }
-    if (props.isOpenEdit[props.reply.id]) {
-      toggleAction(props.reply.id, 'edit');
-    }
-    if (props.isOpenReport[props.reply.id]) {
-      toggleAction(props.reply.id, 'report');
-    }
-  }
-};
 
 const handleDeletingReply = (replyId: string) => {
   emit('handleDeletingReply', replyId);
@@ -148,18 +150,15 @@ onMounted(() => {
       }
     )
     .subscribe();
-
-  document.addEventListener('click', closeModalIfOutsideClick);
 });
 
 onBeforeUnmount(() => {
   client.channel(`reply-${props.reply.id}`).unsubscribe();
-  document.removeEventListener('click', closeModalIfOutsideClick);
 });
 </script>
 
 <template>
-  <div class="comment-thread relative" :class="{ 'ml-14': isSecondLevel }" :id="reply.id">
+  <div class="comment-thread relative" :class="{ 'ml-14': isSecondLevel }" :id="reply.id" v-click-outside="onClickOutsideHandler" ref="ignoreElRef">
     <div :class="['flex', {'my-7' : hasChildReplies}]">
       <div class="mr-3 flex flex-col items-center relative">
         <NuxtImg :src="ownerOfReplies?.user_metadata?.profile_url" alt="profile" class="size-[40px] bg-blue-500 rounded-full" />
@@ -212,14 +211,14 @@ onBeforeUnmount(() => {
               </div>
               <div v-if="isOpenMore[reply.id]" class="flex flex-col items-start min-w-[170px] absolute -left-1 text-white bg-[#13181e] rounded-md px-4 py-2 space-y-3 z-50" ref="editRef">
                 <button type="button" class="flex items-center space-x-2" @click.stop="toggleAction(reply.id, 'report')"><MessageCircleWarning /> <span class="w-full hover:opacity-80 transform duration-300">Report </span></button>
-                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser.id" @click.stop="toggleAction(reply.id, 'edit')"><FilePenLine /> <span class="w-full hover:opacity-80 transform duration-300">Edit </span></button>
-                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser.id" @click="deleteComment(null, reply.id)"><Eraser /> <span class="w-full hover:opacity-80 transform duration-300">Delete </span></button>
+                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser?.id" @click.stop="toggleAction(reply.id, 'edit')"><FilePenLine /> <span class="w-full hover:opacity-80 transform duration-300">Edit </span></button>
+                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser?.id" @click="deleteComment(null, reply.id)"><Eraser /> <span class="w-full hover:opacity-80 transform duration-300">Delete </span></button>
               </div>
               <div v-show="isOpenReport[reply.id]" ref="reportRef">
                 <ReportModal :isOpenReport="isOpenReport" @toggleAction="toggleAction" :comment="comment" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
               </div>
               <div v-show="isOpenEdit[reply.id]">
-                <EditingModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="comment" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
+                <EditingCommentModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="null" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
               </div>
             </div>
           </div>
@@ -256,7 +255,6 @@ onBeforeUnmount(() => {
               :isOpenEdit="isOpenEdit"
               :isOpenReport="isOpenReport"
               :blog_db="blog_db"
-              @closeModalIfOutsideClick="closeModalIfOutsideClick"
               @handleDeletingReply="handleDeletingReply"
             />
           </div>

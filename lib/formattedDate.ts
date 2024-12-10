@@ -14,6 +14,6 @@ export const formattedDate = (date: string | Date | undefined) => {
     return format(validDate, "MMM d, yyyy");
 }
 
-export const formatDateToNow = (date: Date) => {
-    return formatDistanceToNow(date, { addSuffix: true })
+export const formatDateToNow = (date: string | Date | undefined) => {
+  return formatDistanceToNow(date ?? new Date(), { addSuffix: true })
 }

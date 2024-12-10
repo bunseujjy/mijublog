@@ -18,7 +18,7 @@ interface List {
 }
 
 const props = defineProps<{
-  currentUser: User;
+  currentUser: User | null;
   blog_db: BlogData;
 }>();
 
@@ -44,7 +44,7 @@ const createNewList = async () => {
 
   try {
     await newUserList(
-      props.currentUser.id,
+      props.currentUser?.id as string,
       newListName.value.trim(),
       description.value,
       isPublic.value ? "Public" : "Private"
@@ -59,7 +59,7 @@ const createNewList = async () => {
 
 const loadLists = async () => {
   try {
-    const lists = await getLists(props.currentUser.id);
+    const lists = await getLists(props.currentUser?.id as string);
     existingLists.value = lists.map(list => ({
       ...list,
       isChecked: false
@@ -96,10 +96,10 @@ const handleCheckboxChange = async (list: List, checked: boolean) => {
 
   try {
     if (checked) {
-      await savePost(props.currentUser.id, props.blog_db.id, list.id);
+      await savePost(props.currentUser?.id as string, props.blog_db.id, list.id);
       console.log('Post saved to list:', list.id);
     } else {
-      await removePostFromList(props.currentUser.id, props.blog_db.id, list.id);
+      await removePostFromList(props.currentUser?.id as string, props.blog_db.id, list.id);
       console.log('Post removed from list:', list.id);
     }
   } catch (error: any) {

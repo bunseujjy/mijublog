@@ -9,8 +9,7 @@ import type { Database } from '~/supabase';
 
 const props = defineProps<{
   blog_db: BlogData,
-  currentUser: User,
-  authorDetails: User,
+  currentUser: User | null,
   users: User[],
 }>();
 const comments = ref<Comment[]>([]);
@@ -21,7 +20,7 @@ const client = useSupabaseClient()
 const addComment = async () => {
   if (newCommentText.value.trim()) {
     try {
-      const comment: Comment | any = await postComment(props.currentUser?.id, newCommentText.value, props.blog_db.id);
+      const comment: Comment | any = await postComment(props.currentUser?.id as string, newCommentText.value, props.blog_db.id);
       // Check if comment is an array and handle accordingly
       if (Array.isArray(comment)) {
         const newComment = comment[0]; // Take the first comment if it's an array
@@ -43,7 +42,7 @@ const addReply = async (commentId: string, replyText: string, parentReplyId: str
     const reply = await postReply(
       props.blog_db.id,
       commentId,
-      props.currentUser.id,
+      props.currentUser?.id as string,
       replyText,
       parentReplyId
     );

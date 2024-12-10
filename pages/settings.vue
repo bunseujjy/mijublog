@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Camera } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { useToast } from 'vue-toastification';
+import { useToast } from '~/components/ui/toast';
 
 const tabs = [
   { label: 'Personal Information', value: 'personal' },
@@ -12,8 +12,8 @@ const tabs = [
 
 const client = useSupabaseClient()
 const color = useColorMode()
-const toast = useToast()
-const currentUser = ref();
+const {toast} = useToast()
+const {user: currentUser} = useAuth()
 const username = ref('')
 const email = ref('')
 const desc = ref('')
@@ -27,6 +27,13 @@ const theme = ref('light')
 const profile_url = ref('')
 const photoFile = ref<File | null>(null)
 const isUploading = ref(false)
+const isEditing = ref(false)
+const description = ref('')
+
+const cancelEditing = () => {
+    isEditing.value = false
+    description.value = ''
+  }
 
 const handleAvatarChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -84,7 +91,6 @@ const handlePersonalInfoSubmit = async () => {
 
     // Update local user state
     if (userData?.user) {
-      currentUser.value = userData.user;
       profile_url.value = publicUrl;
     }
 
@@ -92,11 +98,11 @@ const handlePersonalInfoSubmit = async () => {
     photoFile.value = null;
     
     // Show success message
-    toast.success('Profile updated successfully');
+    toast({description: 'Profile updated successfully'});
 
   } catch (error) {
     console.error('Error updating profile:', error);
-    toast.error('Failed to update profile');
+    toast({description: 'Failed to update profile', variant: "destructive"});
   } finally {
     isUploading.value = false;
     showOverlay.value = false;
@@ -106,7 +112,7 @@ const handlePersonalInfoSubmit = async () => {
 const handlePasswordChange = async () => {
   try {
     if (newPassword.value !== confirmPassword.value) {
-      toast.error("New passwords don't match!");
+      toast({description: "New passwords don't match!", variant: "destructive"});
       return;
     }
 
@@ -121,10 +127,10 @@ const handlePasswordChange = async () => {
     newPassword.value = '';
     confirmPassword.value = '';
 
-    toast.success('Password updated successfully');
+    toast({description: 'Password updated successfully'});
   } catch (error) {
     console.error('Error updating password:', error);
-    toast.error('Failed to update password');
+    toast({description: 'Failed to update password', variant: 'destructive'});
   }
 };
 
@@ -136,7 +142,6 @@ const updateColorPreference = () => {
 onMounted(async () => {
   const { data: { user } } = await client.auth.getUser();
   if (user) {
-    currentUser.value = user;
     profile_url.value = user.user_metadata?.profile_url || '';
     username.value = user.user_metadata?.username || '';
     email.value = user.email || '';
@@ -210,14 +215,9 @@ onMounted(async () => {
             >
           </div>
           <div>
-            <label for="desc" class="block text-sm font-medium text-gray-700 dark:text-white">Bio</label>
-            <textarea
-              id="desc"
-              v-model="desc"
-              rows="4"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 outline-none transform duration-300"
-              :placeholder="currentUser?.user_metadata?.description"
-            ></textarea>
+            <ClientOnly>
+              <ProfileEditor :user="currentUser" @cancelEditing="cancelEditing" title="Biography"/>
+            </ClientOnly>
           </div>
           <button 
             type="submit" 

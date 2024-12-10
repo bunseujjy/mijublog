@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useToast } from '~/components/ui/toast';
+
 interface Toast {
   success: (message: string) => void;
   error: (message: string) => void;
@@ -9,7 +11,7 @@ const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const client = useSupabaseClient();
-const { toast } = useNuxtApp() as any;
+const { toast } = useToast();
 const router = useRouter()
 
 const handleSignin = async () => {
@@ -19,10 +21,10 @@ const handleSignin = async () => {
   });
   if (error) {
     console.error(error.message);
-    toast.error("Incorrect email or password. Please try again.");
+    toast({description: "Incorrect email or password. Please try again.", variant: 'destructive'});
   } else {
     router.push("/")
-    toast.success("Sign in successful!");
+    toast({description: "Sign in successful!"});
   }
 };
 </script>

@@ -1,7 +1,7 @@
-export async function getUserInfo(follower_id: string) {
+export async function getUserInfo() {
     try {
         const client = useSupabaseClient()
-        const {data, error} = await client.from("user_info").select("*").eq("follower_id", follower_id)
+        const {data, error} = await client.from("user_info").select("*")
         if(error) {
             throw new Error(error.message)
         }

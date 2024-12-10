@@ -1,6 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '~/supabase'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL as string
-const supabaseKey = process.env.SUPABASE_KEY as string
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+let supabase: ReturnType<typeof createClient> | null = null;
+
+export const getSupabaseClient = (config: { SUPABASE_URL: string; SUPABASE_ANON_KEY: string }) => {
+  if (!supabase) {
+    supabase = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+  }
+  return supabase;
+};

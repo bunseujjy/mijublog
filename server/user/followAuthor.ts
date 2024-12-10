@@ -33,6 +33,14 @@ export async function followAuthor(currentUser_id: string, x: number, id: string
                 throw new Error(followError.message);
             }
 
+            const {error} = await supabase.from("profiles").update({
+                following_length: + 1
+            }).eq("id", currentUser_id).select("*")
+
+            if(error) {
+                throw new Error(error.message);
+            }
+
             return { insertData, followData };
         }
 
@@ -47,6 +55,13 @@ export async function followAuthor(currentUser_id: string, x: number, id: string
             console.error('Error incrementing follower count:', followError);
             throw new Error(followError.message);
         }
+        const {error} = await supabase.from("profiles").update({
+                following_length: + 1
+            }).eq("id", currentUser_id).select("*")
+            
+            if(error) {
+                throw new Error(error.message);
+            }
 
         return { followData };
     } catch (error: any) {

@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     {
       path: '~/components',
       pathPrefix: false,
+      global: true,
     },
   ],
   experimental: {
@@ -11,7 +12,7 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/color-mode', '@nuxt/image', '@vueuse/motion/nuxt', '@nuxtjs/supabase', 'nuxt-icon', '@nuxt/icon', ['nuxt-mail', {
+  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/color-mode', '@nuxt/image', '@vueuse/motion/nuxt', '@nuxtjs/supabase', 'nuxt-icon', '@nuxt/icon', 'vue3-perfect-scrollbar/nuxt', ['nuxt-mail', {
     message: {
       to: process.env.SMTP_USER
     },
@@ -56,6 +57,8 @@ export default defineNuxtConfig({
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     EMAIL_PORT: process.env.EMAIL_PORT,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
     public: {
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
@@ -86,7 +89,4 @@ export default defineNuxtConfig({
       ]
     }
   },
-  build: {
-    transpile: ['vue-toastification'],
-  }
 })

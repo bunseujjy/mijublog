@@ -1,68 +1,26 @@
 <script setup lang="ts">
     import { ref, onMounted, onUnmounted } from "vue";
-    import { QuillEditor } from "@vueup/vue-quill";
     import "@vueup/vue-quill/dist/vue-quill.snow.css";
-    import Quill from "quill";
     // @ts-ignore
     import ImageResize from "quill-image-resize";
     import { BoldIcon, ItalicIcon, LinkIcon } from "lucide-vue-next";
     import type { Session, User } from "@supabase/supabase-js";
     import type { Database } from "~/supabase";
-import { useToast } from "vue-toastification";
-    Quill.register("modules/imageResize", ImageResize);
+    import { useToast } from "../ui/toast";
 
     const props = defineProps<{
-        user: User | undefined,
+        user: User | null,
+        title: string
     }>()
     const emit = defineEmits(['cancelEditing'])
     const client = useSupabaseClient<Database>();
-    const toast = useToast();
-    const currentUser = ref<any>();
+    const { toast } = useToast();
     const editor = ref<InstanceType<typeof QuillEditor> | null>(null);
     const content = ref("");
     const showFloatingToolbar = ref<boolean | null>(false);
-    const editorOptions = {
-        theme: 'snow',
-        modules: {
-            toolbar: {
-                container: [
-                    [{ header: [1, 2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ list: 'ordered' }, { list: 'bullet' }],
-                    [{ align: [] }],
-                    ['link', 'image'],
-                    ['clean']
-                ],
-                handlers: {
-                    image: function () {
-                        const input = document.createElement('input')
-                        input.setAttribute('type', 'file')
-                        input.setAttribute('accept', 'image/*')
-                        input.click()
+    let QuillEditor: any; // Declare lazily loaded QuillEditor
+    let Quill: any;
 
-                        input.onchange = async () => {
-                            const file = input.files?.[0]
-                            if (!file) return
-
-                            const imageUrl = await uploadImage(file)
-                            if (!imageUrl) return
-
-                            const quill = editor.value?.getQuill()
-                            const range = quill?.getSelection()
-                            if (quill && range) {
-                                quill.insertEmbed(range.index, 'image', imageUrl)
-                            }
-                        }
-                    }
-                }
-            },
-            imageResize: {
-                displaySize: true,
-                modules: ['Resize', 'DisplaySize', 'Toolbar']
-            }
-        },
-        placeholder: 'Start writing...'
-    }
 
     const formatText = (format: string) => {
         const quill = editor.value?.getQuill();
@@ -123,7 +81,7 @@ import { useToast } from "vue-toastification";
             return;
         }
         if (data) {
-            toast.success("Successfully editing profile")
+            toast({description: "Successfully editing profile"});
             emit('cancelEditing')
         }
     };
@@ -136,13 +94,67 @@ import { useToast } from "vue-toastification";
         }
     };
 
+    const editorOptions = ref({
+        theme: "snow",
+        modules: {}
+    });
+
+    watchEffect(() => {
+        content.value = props?.user?.user_metadata?.description || "";
+    });
+
     onMounted(async () => {
-        const quill = editor.value?.getQuill();
-        if (quill) {
-            quill.on("selection-change", checkSelection);
+        if (typeof window !== "undefined") {
+            Quill = (await import("quill")).default;
+            QuillEditor = (await import("@vueup/vue-quill")).QuillEditor;
+            // @ts-ignore
+            const ImageResize = (await import("quill-image-resize")).default;
+            Quill.register("modules/imageResize", ImageResize);
+
+            editorOptions.value = {
+                theme: "snow",
+                modules: {
+                    toolbar: {
+                        container: [
+                            [{ header: [1, 2, 3, false] }],
+                            ["bold", "italic", "underline", "strike"],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                            [{ align: [] }],
+                            ["link", "image"],
+                            ["clean"]
+                        ],
+                        handlers: {
+                            image: function () {
+                                // Image handler logic
+                                const input = document.createElement("input");
+                                input.setAttribute("type", "file");
+                                input.setAttribute("accept", "image/*");
+                                input.click();
+
+                                input.onchange = async () => {
+                                    const file = input.files?.[0];
+                                    if (!file) return;
+
+                                    const imageUrl = await uploadImage(file);
+                                    if (!imageUrl) return;
+
+                                    const quill = editor.value?.getQuill();
+                                    const range = quill?.getSelection();
+                                    if (quill && range) {
+                                        quill.insertEmbed(range.index, "image", imageUrl);
+                                    }
+                                };
+                            }
+                        }
+                    },
+                    imageResize: {
+                        displaySize: true,
+                        modules: ["Resize", "DisplaySize", "Toolbar"]
+                    }
+                }
+            };
         }
-        await getCurrentUser(currentUser);
-        content.value = props?.user?.user_metadata.description
+        content.value = props?.user?.user_metadata.description || "";
     });
 
     onUnmounted(() => {
@@ -158,7 +170,7 @@ import { useToast } from "vue-toastification";
     <div>
         <div class="mtext-black dark:text-white shadow-lg rounded-lg overflow-hidden">
             <header class="py-4 border-b border-gray-200 flex justify-between items-center">
-                <h1 class="text-xl font-semibold text-black md:text-muted">About Me</h1>
+                <h1 class="text-xl font-semibold text-black md:text-muted">{{ title }}</h1>
                 <button @click="publishStory"
                     class="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition duration-300 ease-in-out">
                     Publish
@@ -168,8 +180,11 @@ import { useToast } from "vue-toastification";
             <div class="py-8">
                 <!-- Quill Editor -->
                 <div class="pt-5">
-                    <QuillEditor ref="editor" :options="editorOptions" @image-added="uploadImage" content-type="html"
-                        v-model="content" :content="content" placeholder="Tell your story..." style="padding-top: 20px" />
+                    <ClientOnly>
+                        <QuillEditor ref="editor" :options="editorOptions" @image-added="uploadImage"
+                            content-type="html" v-model="content" :content="content" placeholder="Tell your story..."
+                            style="padding-top: 20px" />
+                    </ClientOnly>
                 </div>
             </div>
         </div>

@@ -8,13 +8,24 @@ import { postComment } from '~/server/post/postComment'
 import { postReply } from '~/server/comments/postReply'
 import { getComment } from '~/server/comments/getComment'
 
+interface PostComment {
+  content: string;
+    created_at: string | null;
+    id: string;
+    likes_count: number;
+    post_id: string | null;
+    status: string | null;
+    updated_at: string | null;
+    user_id: string | null;
+}
+
 const client = useSupabaseClient()
 const route = useRoute()
-const comment_id = computed(() => route.params.comment_id)
 const post_id = computed(() => route.params.id)
-const currentUser = ref()
+const comment_id = computed(() => route.params.comment_id)
+const {user: currentUser} = useAuth()
 const users = ref<User[]>([])
-const comments = ref()
+const comments = ref<Comment[]>([])
 const blog_db = ref<BlogData | null>(null)
 const isLoading = ref(true)
 const isError = ref(false)
@@ -27,26 +38,17 @@ const moreRef = ref<HTMLElement | null>(null); // Reference to the modal
 const editRef = ref<HTMLElement | null>(null); // Reference to the modal
 const reportRef = ref<HTMLElement | null>(null); // Reference to the modal
 let authorDetails = ref<any>(null);
-const newCommentText = ref<string>("");
-
-const addComment = async () => {
-  if (newCommentText.value.trim()) {
-    const comment = await postComment(currentUser.value?.id, newCommentText.value, blog_db.value?.id as any)
-    comments.value.push(comment)
-    newCommentText.value = '';
-  }
-};
 
 const addReply = async (commentId: string, replyText: string, parentReplyId: string | null) => {
   const reply = await postReply(
     blog_db.value?.id as any,
     commentId,
-    currentUser.value?.id,
+    currentUser.value?.id as string,
     replyText,
     parentReplyId
   );
   // Refresh the comments to show the new reply
-  comments.value = await getComment(blog_db.value?.id as any);
+  comments.value = await getComment(blog_db.value?.id ?? '') || [];
   return reply
 };
 
@@ -100,10 +102,16 @@ onMounted(async () => {
   try {
     await getBlogData()
     await getCurrentUser(currentUser)
-    const data = await getAllUser()
-    
-    if (data) {
-      users.value = [...data]
+    const [user, cmt] = await Promise.all([
+      getAllUser(),
+      getComment(blog_db?.value?.id ?? '')
+    ])
+
+    if (user) {
+      users.value = user || []
+    }
+    if(cmt) {
+      comments.value = cmt || []
     }
   } catch (err) {
     console.error('Failed to fetch data:', err)
@@ -117,19 +125,21 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeModalIfOutsideClick);
 });
+
+console.log(comment_id)
 </script>
 
 <template>
   <div class="max-w-[780px] mx-auto px-4 md:px-0 py-8">
-    <div v-if="isLoading" class="flex justify-center items-center min-h-[200px]">
-      <p>Loading...</p>
+    <div v-if="isLoading" class="flex justify-center items-center min-h-[200px] text-black dark:text-white">
+      <p class="text-black dark:text-white">Loading...</p>
     </div>
     
     <div v-else-if="isError" class="text-center text-red-500">
       <p>Failed to load the comment thread</p>
     </div>
     
-    <template v-else-if="comments.length > 0 && blog_db">
+    <template v-else-if="comments.length !== 0 && blog_db">
       <!-- Link back to the blog post -->
       <NuxtLink 
         :to="`/post/@${authorDetails?.user_metadata.username}/${blog_db.id}`"
@@ -138,11 +148,11 @@ onBeforeUnmount(() => {
         ← Back to post
       </NuxtLink>
       
-      <h1 class="text-2xl font-bold mb-6">Comment Thread</h1>
+      <h1 class="text-2xl font-bold mb-6 text-black dark:text-white">Comment Thread</h1>
       
       <!-- Reuse the CommentThread component -->
         <CommentThread
-          v-for="comment in comments"
+          v-for="comment in comments.filter((cmt) => cmt.id === comment_id)"
           :key="comment.id"
           :comment="comment"
           :currentUser="currentUser"

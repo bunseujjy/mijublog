@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   comment: Comment,
-  currentUser: User,
+  currentUser: User | null,
   blog_db: BlogData
   users: User[]
 }>();
@@ -9,20 +9,16 @@ const props = defineProps<{
 import { Icon } from '#components'
 import type { User } from '@supabase/supabase-js';
 import { CircleMinus, CirclePlus, Ellipsis, Eraser, FilePenLine, Link, MessageCircleWarning, X } from 'lucide-vue-next';
-import * as pkg from "vue-toastification"
-const { useToast } = pkg as any
 import { type Replies, type Comment, type BlogData} from '~/lib/type';
 import { deleteComment } from '~/server/comments/deleteComment';
 import { getReplies } from '~/server/comments/getReplies';
 import { likeComment } from '~/server/comments/likeComment';
-interface Map {
-  [key: string]: string | undefined
-}
+import { useToast } from '../ui/toast';
 
 const emit = defineEmits(['reply', 'handleDeletingCmt']);
 const client = useSupabaseClient()
 const route = useRoute();
-const toast = useToast()
+const {toast} = useToast()
 const isReplying = ref(false);
 const isExpanded = ref(true);
 const replyText = ref('');
@@ -36,7 +32,31 @@ const shareRef = ref<HTMLElement | null>(null);
 const moreRef = ref<HTMLElement | null>(null);
 const editRef = ref<HTMLElement | null>(null);
 const reportRef = ref<HTMLElement | null>(null);
-const reply = ref<Replies | any>({})
+const reply = ref<Replies | any>({});
+const ignoreElRef = ref();
+
+const onClickOutsideHandler = [
+  (event: any) => {
+    const isClickInsideModals = [shareRef, moreRef, editRef, reportRef].some(ref => 
+    ref.value && ref.value.contains(event.target as Node)
+  );
+  if (!isClickInsideModals) {
+    if (isOpen.value[props.comment.id]) {
+      toggleAction(props.comment.id, 'share');
+    }
+    if (isOpenMore.value[props.comment.id]) {
+      toggleAction(props.comment.id, 'more');
+    }
+    if (isOpenEdit.value[props.comment.id]) {
+      toggleAction(props.comment.id, 'edit');
+    }
+    if (isOpenReport.value[props.comment.id]) {
+      toggleAction(props.comment.id, 'report');
+    }
+  }
+  },
+  { ignore: [ignoreElRef] },
+]
 
 const submitReply = () => {
   if (replyText.value.trim()) {
@@ -81,27 +101,6 @@ const toggleAction = (id: string, action: 'share' | 'more' | 'report' | 'edit') 
   stateRef.value[id] = !stateRef.value[id];
 };
 
-const closeModalIfOutsideClick = (event: MouseEvent) => {
-  const isClickInsideModals = [shareRef, moreRef, editRef, reportRef].some(ref => 
-    ref.value && ref.value.contains(event.target as Node)
-  );
-
-  if (!isClickInsideModals) {
-    if (isOpen.value[props.comment.id]) {
-      toggleAction(props.comment.id, 'share');
-    }
-    if (isOpenMore.value[props.comment.id]) {
-      toggleAction(props.comment.id, 'more');
-    }
-    if (isOpenEdit.value[props.comment.id]) {
-      toggleAction(props.comment.id, 'edit');
-    }
-    if (isOpenReport.value[props.comment.id]) {
-      toggleAction(props.comment.id, 'report');
-    }
-  }
-};
-
 const linkToCopy = computed(() => {
   return `${window.location.origin}${route.path}/comment/${props.comment.id}`;
 });
@@ -109,14 +108,14 @@ const linkToCopy = computed(() => {
 const copyLink = async () => {
   try {
     await navigator.clipboard.writeText(linkToCopy.value);
-    toast.success('Link copied')
+    toast({description: 'Link copied'})
   } catch (error) {
     console.error("Failed to copy link:", error);
   }
 };
 
 const handleLikeComment = async () => {
-  await likeComment(1, props.comment.id, props.currentUser.id);
+  await likeComment(1, props.comment.id, props.currentUser?.id as string);
 };
 
 const updateReplies = async () => {
@@ -199,19 +198,16 @@ onMounted(async () => {
       }
     )
     .subscribe();
-
-  document.addEventListener('click', closeModalIfOutsideClick);
 });
 
 onBeforeUnmount(() => {
   client.channel(`comment-${props.comment.id}`).unsubscribe();
   client.channel(`replies-${props.comment.id}`).unsubscribe();
-  document.removeEventListener('click', closeModalIfOutsideClick);
 });
 </script>
 
 <template>
-  <div :class="['comment-thread relative', {'mb-8' : replies.length > 0}]" :id="comment.id">
+  <div :class="['comment-thread relative', {'mb-8' : replies.length > 0}]" :id="comment.id" v-click-outside="onClickOutsideHandler" ref="ignoreElRef">
     <div :class="['flex', {'mt-5' : replies.length > 0}]">
       <div class="mr-3 flex flex-col items-center relative">
         <NuxtImg :src="ownerOfReplies?.user_metadata?.profile_url" alt="profile"
@@ -265,14 +261,14 @@ onBeforeUnmount(() => {
               </div>
               <div v-if="isOpenMore[comment.id]" class="flex flex-col items-start min-w-[170px] absolute -left-1 text-white bg-[#13181e] rounded-md px-4 py-2 space-y-3 z-50" ref="editRef">
                 <button type="button" class="flex items-center space-x-2" @click.stop="toggleAction(comment.id, 'report')"><MessageCircleWarning /> <span class="w-full hover:opacity-80 transform duration-300">Report </span></button>
-                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser.id" @click.stop="toggleAction(comment.id, 'edit')"><FilePenLine /> <span class="w-full hover:opacity-80 transform duration-300">Edit </span></button>
-                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser.id" @click="deleteComment(comment.id, null)"><Eraser  /> <span class="w-full hover:opacity-80 transform duration-300">Delete </span></button>
+                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser?.id" @click.stop="toggleAction(comment.id, 'edit')"><FilePenLine /> <span class="w-full hover:opacity-80 transform duration-300">Edit </span></button>
+                <button type="button" class="flex items-center space-x-2" v-show="ownerOfReplies.id === currentUser?.id" @click="deleteComment(comment.id, null)"><Eraser  /> <span class="w-full hover:opacity-80 transform duration-300">Delete </span></button>
               </div>
               <div v-show="isOpenReport[comment.id]" ref="reportRef">
                 <ReportModal :isOpenReport="isOpenReport" @toggleAction="toggleAction" :comment="comment" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
               </div>
               <div v-show="isOpenEdit[comment.id]">
-                <EditingModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="comment" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
+                <EditingCommentModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="comment" :reply="null" :currentUser="currentUser" :blog_db="blog_db"/>
               </div>
             </div>
           </div>
@@ -307,7 +303,6 @@ onBeforeUnmount(() => {
               :isOpenEdit="isOpenEdit"
               :isOpenReport="isOpenReport"
               :blog_db="blog_db"
-              @closeModalIfOutsideClick="closeModalIfOutsideClick"
               @handleDeletingReply="handleDeletingReply"
             />
           </div>

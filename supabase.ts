@@ -87,6 +87,7 @@ export type Database = {
           likes_count: number | null
           meta_description: string | null
           meta_title: string | null
+          pin: boolean | null
           publish_date: string | null
           share_count: number | null
           slug: string
@@ -112,6 +113,7 @@ export type Database = {
           likes_count?: number | null
           meta_description?: string | null
           meta_title?: string | null
+          pin?: boolean | null
           publish_date?: string | null
           share_count?: number | null
           slug: string
@@ -137,6 +139,7 @@ export type Database = {
           likes_count?: number | null
           meta_description?: string | null
           meta_title?: string | null
+          pin?: boolean | null
           publish_date?: string | null
           share_count?: number | null
           slug?: string
@@ -181,6 +184,32 @@ export type Database = {
           slug?: string
         }
         Relationships: []
+      }
+      category_followed_by: {
+        Row: {
+          category_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_followed_by_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       comment_reports: {
         Row: {
@@ -389,6 +418,7 @@ export type Database = {
           description: string
           email: string | null
           follower_length: number | null
+          following_length: number | null
           id: string
           profile_url: string
           username: string | null
@@ -397,6 +427,7 @@ export type Database = {
           description: string
           email?: string | null
           follower_length?: number | null
+          following_length?: number | null
           id: string
           profile_url: string
           username?: string | null
@@ -405,6 +436,7 @@ export type Database = {
           description?: string
           email?: string | null
           follower_length?: number | null
+          following_length?: number | null
           id?: string
           profile_url?: string
           username?: string | null
@@ -598,6 +630,14 @@ export type Database = {
         }
         Returns: Json
       }
+      decrement_category_follower: {
+        Args: {
+          x: number
+          row_id: string
+          user_id: string
+        }
+        Returns: Json
+      }
       decrement_comment_like: {
         Args: {
           x: number
@@ -629,6 +669,22 @@ export type Database = {
               row_id: string
             }
             Returns: undefined
+          }
+        | {
+            Args: {
+              x: number
+              row_id: string
+              user_id: string
+            }
+            Returns: Json
+          }
+      increment_category_follower:
+        | {
+            Args: {
+              x: number
+              row_id: string
+            }
+            Returns: Json
           }
         | {
             Args: {

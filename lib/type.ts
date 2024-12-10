@@ -17,7 +17,7 @@ export  interface BlogData {
     content: string | null;
     featured_image_url: string | undefined;
     author_id: string
-    publish_date: Date;
+    publish_date: string;
     updated_at: Date;
     status: string;
     meta_title: string | null;
@@ -36,7 +36,7 @@ export  interface BlogData {
     attachment_urls: JSON | null;
     poster: string;
     date: string;
-    dramas: Drama[];
+    pin: boolean;
 }
 
 export interface Comment {
@@ -68,4 +68,40 @@ export interface User {
   username: string;
   email: string;
   // Add other fields that the user object contains
+}
+
+export interface PublicUser {
+  id: string;
+  profile_url: string;
+  username: string;
+  email: string;
+  description: string;
+  follower_length: number;
+  following_length: number;
+}
+
+export interface Lists {
+  created_at: string | null;
+  description: string;
+  id: string;
+  name: string;
+  status: string | null;
+  user_id: string;
+}
+
+export interface SavedPosts {
+  user_id: string;
+  post_id: string;
+  id: string;
+  saved_at: Date;
+  list_id: string
+}
+
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  post_length: number;
+  followers: number;
 }

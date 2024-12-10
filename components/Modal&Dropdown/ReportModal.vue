@@ -8,7 +8,7 @@
     isOpenReport: Record<string, boolean>,
     comment: Comment,
     reply: Replies,
-    currentUser: User,
+    currentUser: User | null,
     blog_db: BlogData
   }>()
 
@@ -27,11 +27,11 @@
       try {
         await emailReporting(
           props.comment.id || props.reply.id,
-          props.currentUser.id,
+          props.currentUser?.id as string,
           reason.value,
           details.value,
-          props.currentUser.user_metadata.email,
-          props.currentUser.user_metadata.username,
+          props.currentUser?.user_metadata.email,
+          props.currentUser?.user_metadata.username,
           props.blog_db.title
         );
         resetForm();
