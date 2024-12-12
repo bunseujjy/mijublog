@@ -11,9 +11,6 @@ export default defineNuxtConfig({
     renderJsonPayloads: false
   },
   compatibilityDate: '2024-04-03',
-  nitro: {
-    compressPublicAssets: true
-  },
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/color-mode', '@nuxt/image', '@vueuse/motion/nuxt', '@nuxtjs/supabase', 'nuxt-icon', '@nuxt/icon', 'vue3-perfect-scrollbar/nuxt', ['nuxt-mail', {
     message: {

@@ -40,12 +40,6 @@ const handleSignOut = async () => {
   await signOut()
 }
 
-// Redirect if not authenticated
-watchEffect(() => {
-  if (!user.value) {
-    navigateTo('/signin')
-  }
-})
 </script>
 
 <template>

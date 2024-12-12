@@ -1,0 +1,110 @@
+{
+    "id": 1,
+    "title": "Chinese Drama",
+    "description": "Top 10 Chinese Dramas You Should Watch in 2024",
+    "poster": "/poster.jpg",
+    "date": "November 15, 2024",
+    "dramas": [
+      {
+        "author": "Ju Jingyi",
+        "rank": 1,
+        "title": "The Story of Pearl Girl",
+        "genre": ["Romance", "Historical", "Drama"],
+        "release_date": "2024-01-15",
+        "description": "Duan Wu, a pearl diver from Hepu meets Yan Zi Jing, a businessman from Xiyu (Western Region), and Zhang Jin Ran, a humble gentleman. She joins Yan's caravan and embarks on a journey filled with struggles as she enters the world of jewelry. However, during her trip to the northwest, she unravels the secrets of her life and gets entangled in Yan Zi Jing's quest for revenge. She experiences the loss of close relatives and betrayal by her beloved. Renamed Su Mu Zhe, Duan Wu courageously ventures into Yangzhou in pursuit of the truth, refusing to be consumed by hatred. Letting go of the past, she teams up with Zhang Jin Ran and confronts fierce struggles together with Yan Zi Jing, who initially planned to bear the burden of stigma and hatred alone, but finally finds solace in his heart and eases his knot. After the storm settles, Su Mu Zhe reaches the pinnacle of jewelry art at the Jewelry Competetion Fair, inspiring many women to take control of their destinies. (Source: Chinese = Youku || Translation = MyDramaList) ~~ Adapted from the novel `Kun Shan Yu Qian Zhuan` (昆山玉前传) by Tan Tian Yin (谈天音).",
+        "cast": ["Zhao Lusi", "Liu Yu Ning"],
+        "poster_url": "https://i.mydramalist.com/zBdAZW_4c.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 2,
+        "title": "Kill Me Love Me",
+        "genre": ["Romance", "Thriller", "Drama"],
+        "release_date": "2024-02-01",
+        "description": "Prince Murong Jing He of the Great Yan Dynasty led his Weibei Army to reclaim Qingzhou, a lost territory. His triumphant victory should have been a moment of glory, but soon after his army entered the city, a devastating fire broke out. Whispers spread throughout Qingzhou, accusing Murong Jing He of harboring a grudge against the people for their alleged betrayal of Great Yan. Rumor had it that the prince, now known as the ruthless `Butcher General`, ordered the city to be burned to the ground. In the flames, a young girl named Mei Lin lost her entire family. Heartbroken and consumed by vengeance, she vowed to kill the one responsible for the massacre. She joins a secret organization known as the Shadow Works, where she undergoes years of brutal training after consuming a deadly poison that turns her into an unstoppable assassin. Mei Lin's first mission is finally assigned: to assassinate her greatest enemy, Prince Murong Jing He himself. Disguised as one of a hundred Xiyan beauties sent to the Great Yan as part of a political marriage alliance, she patiently waits for her chance to strike. But what Mei Lin doesn't know is that the man who masterminded her entire assassination mission—setting her on this path of revenge—is none other than Murong Jing He himself.(Source: Youku) ~~ Adapted from the novel `Chun Hua Yan` (春花厌) by Hei Yan (黑颜).",
+        "cast": ["Zhao Lusi", "Allen Ren"],
+        "poster_url": "https://i.mydramalist.com/g0mk2P_4c.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 3,
+        "title": "Fangs of Fortune",
+        "genre": ["Fantasy", "Adventure", "Action"],
+        "release_date": "2024-03-10",
+        "description": "In a world where vampires and humans coexist, a young woman discovers that she holds the key to an ancient prophecy and must navigate a world of intrigue, danger, and forbidden love.",
+        "cast": ["Li Xian", "Dilraba Dilmurat"],
+        "poster_url": "https://i.mydramalist.com/Bd5Z16_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 4,
+        "title": "Smile Code",
+        "genre": ["Romance", "Comedy", "Drama"],
+        "release_date": "2024-04-18",
+        "description": "A quirky, heartwarming romance about a brilliant but socially awkward programmer who falls for a charming but mysterious woman, leading to both comedic and tender moments.",
+        "cast": ["Chen Xingxu", "Bai Lu"],
+        "poster_url": "https://i.mydramalist.com/Bdg5AA_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 5,
+        "title": "Love Game in Eastern Fantasy",
+        "genre": ["Fantasy", "Romance", "Adventure"],
+        "release_date": "2024-05-23",
+        "description": "A captivating fantasy romance set in a mystical world, where a skilled warrior and a princess must team up to break an ancient curse and prevent the downfall of their kingdom.",
+        "cast": ["Zhou Dongyu", "Yang Yang"],
+        "poster_url": "https://i.mydramalist.com/VXOLzy_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 6,
+        "title": "The Rise of Ning",
+        "genre": ["Historical", "Drama", "Action"],
+        "release_date": "2024-06-05",
+        "description": "A young warrior named Ning rises from the ashes of his village's destruction, seeking vengeance while uncovering dark secrets about his family and the kingdom’s corrupt politics.",
+        "cast": ["Wang Yibo", "Zhang Ziyi"],
+        "poster_url": "https://i.mydramalist.com/YYmZZQ_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 7,
+        "title": "Snowy Night: Timeless Love",
+        "genre": ["Romance", "Fantasy", "Drama"],
+        "release_date": "2024-07-10",
+        "description": "A love story spanning centuries, where two star-crossed lovers are reincarnated in different lifetimes but are always drawn to each other, despite the obstacles fate throws their way.",
+        "cast": ["Liu Haoran", "Zhao Lusi"],
+        "poster_url": "https://i.mydramalist.com/nOrpvx_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 8,
+        "title": "Go Back Lover",
+        "genre": ["Romance", "Drama", "Fantasy"],
+        "release_date": "2024-08-02",
+        "description": "A heartwarming story of a woman who mysteriously returns to her past to reconnect with her first love, discovering both the beauty and pain of second chances.",
+        "cast": ["Yang Zi", "Johnny Huang"],
+        "poster_url": "https://i.mydramalist.com/yWVPPk_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 9,
+        "title": "You are my Lover Friend",
+        "genre": ["Romance", "Drama", "Comedy"],
+        "release_date": "2024-09-15",
+        "description": "A playful romantic comedy about two childhood friends who reconnect as adults and struggle to distinguish between friendship and love while navigating their complicated feelings.",
+        "cast": ["Wu Lei", "Zhou Ye"],
+        "poster_url": "https://i.mydramalist.com/pdrO4V_4s.jpg?v=1"
+      },
+      {
+        "author": "Ju Jingyi",
+        "rank": 10,
+        "title": "A Beautiful Lie",
+        "genre": ["Drama", "Romance", "Mystery"],
+        "release_date": "2024-10-01",
+        "description": "A gripping tale about a woman who discovers her husband’s dark past, forcing her to question everything she thought she knew about him and their relationship.",
+        "cast": ["Li Xian", "Yang Mi"],
+        "poster_url": "https://i.mydramalist.com/x4gb7z_4s.jpg?v=1"
+      }
+    ]
+  }
+  

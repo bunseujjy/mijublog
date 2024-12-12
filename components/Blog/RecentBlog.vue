@@ -25,7 +25,6 @@ const selectedCategory = ref('')
 const page = ref(1)
 const pageSize = 5  
 const isScrolling = ref(false)
-
 const containerRef = ref<HTMLElement | null>(null)
 
 const findAuthorDetail = (author_id: string) => {
