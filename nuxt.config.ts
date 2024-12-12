@@ -11,6 +11,9 @@ export default defineNuxtConfig({
     renderJsonPayloads: false
   },
   compatibilityDate: '2024-04-03',
+  nitro: {
+    compressPublicAssets: true
+  },
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/color-mode', '@nuxt/image', '@vueuse/motion/nuxt', '@nuxtjs/supabase', 'nuxt-icon', '@nuxt/icon', 'vue3-perfect-scrollbar/nuxt', ['nuxt-mail', {
     message: {
@@ -62,6 +65,7 @@ export default defineNuxtConfig({
     public: {
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      baseURL: process.env.APP_DOMAIN || 'http://localhost:3000',
       motion: {
         directives: {
           'pop-bottom': {

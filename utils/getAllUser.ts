@@ -1,9 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
+import supabase from "~/utils/supabase";
 
-export default async function(){
-  const config = useRuntimeConfig()
-  const client = createClient(config.public.SUPABASE_URL, config.public.SUPABASE_ANON_KEY)
-  const { data: { users: userList }, error } = await client.auth.admin.listUsers()
+export default async function () {
+  const { data: { users: userList }, error } = await supabase().auth.admin.listUsers();
 
   if (error) {
     console.error("Error getting session:", error);

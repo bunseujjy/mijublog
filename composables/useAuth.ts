@@ -3,7 +3,6 @@ import { useToast } from "~/components/ui/toast";
 
 export const useAuth = () => {
   const user = useSupabaseUser();
-  const client = useSupabaseClient();
   const loading = ref(false);
   const error = ref(null);
   const {toast} = useToast();
@@ -14,7 +13,7 @@ export const useAuth = () => {
     error.value = null;
 
     try {
-      const { error: signOutError } = await client.auth.signOut();
+      const { error: signOutError } = await useSupabaseClient().auth.signOut();
       if (signOutError) throw signOutError;
 
       toast({description: "Signed out successfully"});

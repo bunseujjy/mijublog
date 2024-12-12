@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { useToast } from '~/components/ui/toast';
 
-interface Toast {
-  success: (message: string) => void;
-  error: (message: string) => void;
-  // add other methods if available (e.g., info, warning, etc.)
-}
-
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
