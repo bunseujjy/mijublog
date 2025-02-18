@@ -13,7 +13,7 @@ export async function unfollowAuthor(x: number, id: string, user_id: string){
             }
             const {error: profileError} = await supabase.from("profiles").update({
                 following_length: - 1
-            }).eq("id", user_id).select("*")
+            }).eq("user_id", user_id).select("*")
             
             if(profileError) {
                 throw new Error(profileError.message);

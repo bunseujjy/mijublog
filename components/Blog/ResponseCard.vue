@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { GripVerticalIcon, Heart, Link2 } from 'lucide-vue-next';
+import { Eraser, GripVerticalIcon, Heart, Link2, PencilLine } from 'lucide-vue-next';
 import { formatDateToNow } from '~/lib/formattedDate';
 import type { Comment, Replies } from '~/lib/type';
 import { useToast } from '../ui/toast';
 import type { User } from '@supabase/supabase-js';
+import { deleteComment } from '~/server/comments/deleteComment';
 
 interface ResponseCardProps {
   response: Comment | null;
@@ -40,6 +41,17 @@ const handleClickOutside = () => {
   dropdownState.value[props.response?.id || props.reply?.id || ''] = false;
 }
 
+const handleDelete = async () => {
+  try {
+    if(props.response?.id) {
+      await deleteComment(props.response.id, null)
+    } else if(props.reply?.id) {
+      await deleteComment(null, props.reply.id)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
@@ -70,15 +82,17 @@ const handleClickOutside = () => {
               <GripVerticalIcon class="w-4 h-4 cursor-pointer" />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-48 dark:bg-gray-800 dark:text-white dark:border-muted-foreground">
-              <DropdownMenuGroup class="pt-2">
-                <DropdownMenuItem class="hover:!bg-transparent hover:!text-white hover:!text-opacity-50 ml-2 cursor-pointer" @click="toggleEdit">
-                  Edit Response
+              <DropdownMenuGroup>
+                <DropdownMenuItem class="cursor-pointer" @click="toggleEdit">
+                  <PencilLine /> Edit Response
                 </DropdownMenuItem>
-                <DropdownMenuSeparator class="my-[11px]" />
-              </DropdownMenuGroup>
-              <DropdownMenuGroup class="pb-2">
+                <DropdownMenuSeparator />
                 <DropdownMenuItem class="ml-2 cursor-pointer" asChild>
-                  <AlertDeleteDialog :response="props.response" :reply="props.reply"/>
+                  <AlertDeleteDialog title="Response" :response="props.response" :reply="props.reply" @handleDelete="handleDelete">
+                  <template #icon>
+                    <Eraser />
+                  </template>
+                  </AlertDeleteDialog>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -89,7 +103,7 @@ const handleClickOutside = () => {
         </div>
       </div>
       <div class="text-black dark:text-muted">
-        <p class="text-xs md:text-sm">Posted at <span>{{ formatDateToNow(response?.created_at || reply?.created_at) }}</span></p>
+        <p class="text-xs md:text-sm">Posted at <span>{{ formatDateToNow(response?.updated_at || reply?.updated_at) }}</span></p>
       </div>
     </div>
   </div>

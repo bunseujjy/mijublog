@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { BookAudio, LogOut, Settings, User } from 'lucide-vue-next';
-import { ref, computed } from 'vue'
-const { user, signOut } = useAuth()
+const { user, signOut } =useAuth()
 const isOpen = ref(false)
 
 const menuItems = computed(() => [
@@ -50,7 +49,7 @@ const handleSignOut = async () => {
       class="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full"
     >
       <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden">
-        <NuxtImg 
+        <NuxtImg format="webp" loading="lazy" 
           :src="user.user_metadata?.profile_url || '/path/to/default-avatar.png'"
           :alt="user.user_metadata?.username"
           class="w-full h-full object-cover border-2 border-gray-200 rounded-full" 

@@ -11,3 +11,5 @@
       </NuxtLink>
     </TabsList>
   </template>
+
+  <script lang="ts" setup></script>

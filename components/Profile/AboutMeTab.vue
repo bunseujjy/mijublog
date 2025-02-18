@@ -24,8 +24,7 @@ const isEditing = ref(false)
 </script>
 
 <template>
-    
-    <div class="p-6">
+    <div class="px-4" v-if="currentUser.id === user?.id">
           <div v-if="user?.user_metadata?.description">
             <div v-show="isEditing">
               <ClientOnly>
@@ -78,5 +77,15 @@ const isEditing = ref(false)
               <p>{{ publicUser?.follower_length }} Followers <span>·</span> {{ publicUser?.following_length }} Following</p>
             </div>
           </div>
+        </div>
+        <div v-else>
+          <div v-if="user?.user_metadata?.description" v-html="user?.user_metadata?.description"
+              class="text-gray-600 dark:text-muted mb-4 px-6">
+            </div>
+            <div v-else>
+              <div v-if="!isEditing" class="bg-[#F9F9F9] text-center px-5 py-9 space-y-4">
+              <p>This user does not have biography yet!</p>
+            </div>
+            </div>
         </div>
 </template>

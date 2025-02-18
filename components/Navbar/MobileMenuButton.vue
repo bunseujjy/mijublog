@@ -1,7 +1,6 @@
 <template>
     <button
       class="outline-none text-gray-400 block lg:hidden"
-      @click="$emit('toggle')"
     >
       <svg
         v-if="menuState"
@@ -44,5 +43,4 @@
     }
   })
   
-  defineEmits(['toggle'])
   </script>

@@ -2,7 +2,6 @@
 import type { User } from '@supabase/supabase-js';
 import type { BlogData } from '~/lib/type';
 import { formattedDate } from '~/lib/formattedDate';
-import { getAuthorDetails } from '~/lib/getAuthorDetails';
 
 defineProps<{
   post: BlogData;
@@ -14,9 +13,9 @@ defineProps<{
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
         <div class="text-black dark:text-white flex-grow space-y-2">
           <div class="flex items-center pb-2">
-            <NuxtImg :src="author?.user_metadata?.profile_url || '/post_placeholder.png'" :alt="'post ' + post.id"
+            <NuxtImg format="webp" loading="lazy" :src="author?.user_metadata?.profile_url || '/post_placeholder.png'" :alt="'post ' + post.id"
             class="size-[35px] bg-center object-cover rounded-full mt-4 md:mt-0"
-            :placeholder="15" sizes="100vw sm:50vw md:35px" loading="lazy" />
+            :placeholder="15" sizes="100vw sm:50vw md:35px" />
             <p class="pl-2">{{ author?.user_metadata?.username }}</p>
           </div>
           <NuxtLink :to="`/post/@${author?.user_metadata?.username}/${post.id}`" class="text-md md:text-xl font-bold">{{ post.title }}</NuxtLink>
@@ -31,13 +30,12 @@ defineProps<{
           </NuxtLink>
         </div>
         <div class="w-full md:w-[250px] aspect-[5/3] flex-shrink-0">
-            <NuxtImg 
+            <NuxtImg format="webp" loading="lazy" 
               :src="post.featured_image_url || '/post_placeholder.png'" 
               :alt="'post ' + post.id"
               class="w-full h-full object-cover"
               :placeholder="15" 
               sizes="(min-width: 768px) 250px, 100vw" 
-              loading="lazy" 
             />
           </div>
       </div>

@@ -37,37 +37,64 @@ export  interface BlogData {
     poster: string;
     date: string;
     pin: boolean;
+    allow_comments: boolean;
+    seo_title: string;
+    seo_description: string;
+    settings_updated_at: string;
 }
 
-export interface Comment {
+export type BlogPostUpdate = Partial<Pick<BlogData,
+  | 'title'
+  | 'subtitle'
+  | 'content'
+  | 'visibility'
+  | 'allow_comments'
+  | 'tags'
+  | 'seo_title'
+  | 'seo_description'
+>>;
+export interface BaseComment {
   id: string;
-  post_id: string;
-  user_id: string;
   content: string;
   likes_count: number;
-  created_at: Date;
-  updated_at: Date;
-  status: string
 }
+
+export interface Comment extends BaseComment {
+  post_id: string | null;
+  list_id: string | null;
+  user_id: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  status: string | null;
+  type: string | null;
+}
+
+export type CommentResponse = Comment[];
 
 export interface Replies {
   id: string;
   comment_id: string;
   post_id: string;
+  list_id: string;
   user_id: string;
   parent_reply_id: string;
   content: string;
   likes_count: number;
   created_at: Date;
   updated_at: Date;
-  status: string
+  status: string;
+  type: string;
 }
 
-export interface User {
+export interface PublicUser {
   id: string;
+  user_id: string;
   username: string;
   email: string;
-  // Add other fields that the user object contains
+  profile_url: string;
+  description: string;
+  follower_length: number;
+  following_length: number;
 }
 
 export interface PublicUser {
@@ -80,14 +107,16 @@ export interface PublicUser {
   following_length: number;
 }
 
-export interface Lists {
-  created_at: string | null;
-  description: string;
+export type Lists = {
   id: string;
-  name: string;
-  status: string | null;
   user_id: string;
-}
+  name: string;
+  slug: string | null; // Allow null
+  description: string | null;
+  status: string | null;
+  created_at: string | null; // Ensure consistency
+};
+
 
 export interface SavedPosts {
   user_id: string;
@@ -97,11 +126,52 @@ export interface SavedPosts {
   list_id: string
 }
 
-
 export interface Category {
   id: string;
   name: string;
   slug: string;
   post_length: number;
   followers: number;
+}
+
+export interface FollowInfo {
+  id: string;
+  follower_id: string;
+  author_id: string;
+  created_at: Date;
+}
+
+export type Notifications = {
+  id: number; // Matches the database type
+  user_id: string | null; // Allow null values
+  sender_id: string | null; // Allow null values
+  message: string;
+  status: "read" | "unread" | null; // Allow null values
+  type: string | null; // Allow null values
+  created_at: string | null; // Allow null values for timestamps
+  updated_at: string | null; // Allow null values for timestamps
+};
+
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: 'email' | 'push'
+  title: string
+  message: string
+  read: boolean
+  created_at: string
+}
+
+export interface NotificationPreferences {
+  email_enabled: boolean
+  push_enabled: boolean
+}
+
+export interface PushSubscription {
+  endpoint: string
+  keys: {
+    p256dh: string
+    auth: string
+  }
 }

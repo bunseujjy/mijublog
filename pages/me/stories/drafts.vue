@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import BlogNavigation from '~/components/Blog/BlogNavigation.vue';
 
-    const { user: currentUser } = useAuth();
+    const { user: currentUser } =useAuth();
     const {
         isLoading,
         error,
@@ -18,6 +18,13 @@
         if (!currentUser.value?.id) return [];
         return filterPostsByStatus(currentUser.value.id, 'draft');
     });
+
+    useSeoMeta({
+        title: `${currentUser?.value?.user_metadata?.username} | Draft`,
+        ogTitle: `${currentUser?.value?.user_metadata?.username} | Draft`,
+        ogUrl: `${import.meta.env.VITE_BASE_URL}/me/stories/drafts`,
+        twitterTitle: `${currentUser?.value?.user_metadata?.username} | Draft`,
+    })
 </script>
 
 <template>

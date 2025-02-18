@@ -1,26 +1,30 @@
 <script setup lang="ts">
 import type { User } from '@supabase/supabase-js';
 import { ref } from 'vue';
-import {  type Comment, type BlogData } from '~/lib/type';
+import {  type Comment, type BlogData, type Lists } from '~/lib/type';
 import { getComment } from '~/server/comments/getComment';
+import { postComment } from '~/server/comments/postComment';
 import { postReply } from '~/server/comments/postReply';
-import { postComment } from '~/server/post/postComment';
 import type { Database } from '~/supabase';
 
 const props = defineProps<{
-  blog_db: BlogData,
+  blog_db: BlogData | null,
+  list_db: Lists | null,
   currentUser: User | null,
   users: User[],
+  type: string
 }>();
+const client = useSupabaseClient()
 const comments = ref<Comment[]>([]);
 const newCommentText = ref<string>("");
+const cmtLoading = ref(false)
 let ownerOfComment = ref<any>(null)
-const client = useSupabaseClient()
 
 const addComment = async () => {
   if (newCommentText.value.trim()) {
+    cmtLoading.value = true
     try {
-      const comment: Comment | any = await postComment(props.currentUser?.id as string, newCommentText.value, props.blog_db.id);
+      const comment: Comment | any = await postComment(props.currentUser?.id as string, newCommentText.value, props.blog_db?.id || null, props.list_db?.id || null, props.type);
       // Check if comment is an array and handle accordingly
       if (Array.isArray(comment)) {
         const newComment = comment[0]; // Take the first comment if it's an array
@@ -33,6 +37,8 @@ const addComment = async () => {
       newCommentText.value = '';
     } catch (error) {
       console.error('Error adding comment:', error);
+    } finally {
+      cmtLoading.value = false;
     }
   }
 };
@@ -40,14 +46,16 @@ const addComment = async () => {
 const addReply = async (commentId: string, replyText: string, parentReplyId: string | null) => {
   try {
     const reply = await postReply(
-      props.blog_db.id,
+      props.blog_db?.id || null,
+      props.list_db?.id || null,
       commentId,
       props.currentUser?.id as string,
       replyText,
-      parentReplyId
+      parentReplyId,
+      props.type
     );
     // Refresh the comments to show the new reply
-    const updatedComments = await getComment(props.blog_db.id);
+    const updatedComments = await getComment(props.blog_db?.id ?? '', props.list_db?.id ?? '');
     if (updatedComments) {
       comments.value = Array.isArray(updatedComments) ? updatedComments : [updatedComments];
     }
@@ -60,7 +68,7 @@ const addReply = async (commentId: string, replyText: string, parentReplyId: str
 
 const updateComments = async () => {
   try {
-    const updatedComments = await getComment(props.blog_db.id);
+    const updatedComments = await getComment(props.blog_db?.id ?? '', props.list_db?.id ?? '');
     if (updatedComments) {
       comments.value = Array.isArray(updatedComments) ? updatedComments : [updatedComments];
     }
@@ -91,11 +99,10 @@ onMounted(async () => {
         event: '*', 
         schema: 'public', 
         table: 'comments',
-        filter: `blog_id=eq.${props.blog_db.id}`
+        filter: `blog_id=eq.${props.blog_db?.id}`
       },
       async (payload) => {
         const { eventType, new: newRecord, old: oldRecord } = payload;
-        
         if (eventType === 'INSERT') {
           // Handle array or single comment
           const newComment = Array.isArray(newRecord) ? newRecord[0] : newRecord;
@@ -118,11 +125,7 @@ onMounted(async () => {
         }
       }
     )
-    .subscribe((error) => {
-      if (error) {
-        console.error('Error with subscription:', error);
-      }
-    });
+    .subscribe();
 });
 
 onBeforeUnmount(() => {
@@ -148,13 +151,15 @@ onBeforeUnmount(() => {
       </button>
     </div>
     <div class="space-y-4">
-      <CommentThread
-        v-for="comment in comments"
+      <CommentLoading v-if="cmtLoading" :comments="comments" :reply="[]"/>
+      <CommentThread v-else
+        v-for="comment in comments.filter((data) => data.type  === props.type)"
         :key="comment.id"
         :comment="comment"
         :currentUser="currentUser"
         :users="users"
         :blog_db="blog_db"
+        :list_db="list_db"
         @reply="addReply"
         @handleDeletingCmt="handleDeletingCmt"
       />

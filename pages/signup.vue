@@ -1,3 +1,61 @@
+<script setup>
+  import { useToast } from '~/components/ui/toast';
+  const router = useRouter()
+  const client = useSupabaseClient();
+  const { toast } = useToast()
+  const email = ref('')
+  const username = ref('')
+  const password = ref('')
+  const desc = ref('')
+  const showPassword = ref(false)
+
+  const handleSubmit = async () => {
+  const { data, error } = await client.auth.signUp({
+    email: email.value,
+    password: password.value,
+    options: {
+      data: {
+        username: username.value,
+        profile_url: "/default-pf.jpg",
+        description: desc.value,
+      }
+    }
+  });
+
+  // Check if user was created successfully
+  if (error) {
+    console.error('Error signing up:', error);
+    toast({ description: 'Failed to sign up', variant: 'destructive' });
+    return; // Exit the function if there was an error
+  }
+
+  // Proceed to create the profile only if data is valid
+  if (data && data.user) {
+    const { error: profileError } = await client
+      .from('profiles')
+      .insert({
+        username: username.value,
+        email: email.value, // Ensure this is valid and not null
+        profile_url: "/default-pf.jpg",
+        description: desc.value,
+        user_id: data.user.id // Use the newly created user's ID
+      });
+
+    if (profileError) {
+      console.error('Error creating profile:', profileError);
+      toast({ description: 'Failed to create profile', variant: 'destructive' });
+    } else {
+      router.push('/');
+      toast({ description: 'Sign up successfully' });
+      return data;
+    }
+  } else {
+    console.error('Unexpected response structure:', data);
+    toast({ description: 'Unexpected response from signup', variant: 'destructive' });
+  }
+}
+</script>
+
 <template>
   <div
     class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center p-4">
@@ -104,44 +162,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-  import { useToast } from '~/components/ui/toast';
-
-
-  const router = useRouter()
-  const client = useSupabaseClient();
-  const { toast } = useToast()
-  const email = ref('')
-  const username = ref('')
-  const password = ref('')
-  const desc = ref('')
-  const showPassword = ref(false)
-
-  const handleSubmit = async () => {
-    const { data, error } = await client.auth.signUp({
-      email: email.value,
-      password: password.value,
-      role: "user",
-      options: {
-        data: {
-          email: email.value,
-          username: username.value,
-          profile_url: "/default-pf.jpg",
-          description: desc.value,
-          follower_length: 0
-        }
-      }
-    })
-    if (error) {
-      console.error('Error signing up:', error);
-      toast({ description: 'Failed to sign up', variant: 'destructive' })
-    } else {
-      router.push('/');
-      toast({ description: 'Sign up successfully' })
-    }
-  }
-</script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

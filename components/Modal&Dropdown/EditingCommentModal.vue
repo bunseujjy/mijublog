@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { User } from '@supabase/supabase-js';
-    import type { BlogData, Comment, Replies } from '~/lib/type';
+    import type { BlogData, Comment, Lists, Replies } from '~/lib/type';
     import { updatingComments, updatingReply } from '~/server/comments/updatingComments';
 
     const props = defineProps<{
@@ -8,7 +8,8 @@
         comment: Comment | null,
         reply: Replies | null,
         currentUser: User | null,
-        blog_db: BlogData
+        blog_db: BlogData | null,
+        list_db: Lists | null
     }>()
 
     const emit = defineEmits(['toggleAction'])
@@ -31,9 +32,9 @@
             await new Promise((resolve) => setTimeout(resolve, 1000));
             if (editedComment.value && editedComment.value.trim()) {
                 if(props.comment?.id) {
-                    await updatingComments(props.comment?.id, editedComment.value, props.currentUser?.id as string, props.blog_db.id)
+                    await updatingComments(props.comment?.id, editedComment.value, props.currentUser?.id as string, props.blog_db?.id ?? '', props.list_db?.id ?? '')
                 } else if(props.reply?.id) {
-                    await updatingReply(editedComment.value, props.reply?.id, props.currentUser?.id as string, props.blog_db.id)
+                    await updatingReply(editedComment.value, props.reply?.id, props.currentUser?.id as string, props.blog_db?.id ?? '', props.list_db?.id ?? '')
                 }
                 props.isOpenEdit[props.comment?.id || props.reply?.id || ''] = false
             }

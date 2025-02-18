@@ -1,20 +1,20 @@
 <script setup lang="ts">
-const props = defineProps<{
-  comment: Comment,
-  currentUser: User | null,
-  blog_db: BlogData
-  users: User[]
-}>();
-
 import { Icon } from '#components'
 import type { User } from '@supabase/supabase-js';
 import { CircleMinus, CirclePlus, Ellipsis, Eraser, FilePenLine, Link, MessageCircleWarning, X } from 'lucide-vue-next';
-import { type Replies, type Comment, type BlogData} from '~/lib/type';
+import { type Replies, type Comment, type BlogData, type Lists} from '~/lib/type';
 import { deleteComment } from '~/server/comments/deleteComment';
 import { getReplies } from '~/server/comments/getReplies';
 import { likeComment } from '~/server/comments/likeComment';
 import { useToast } from '../ui/toast';
 
+const props = defineProps<{
+  comment: Comment,
+  currentUser: User | null,
+  blog_db: BlogData | null,
+  list_db: Lists | null,
+  users: User[]
+}>();
 const emit = defineEmits(['reply', 'handleDeletingCmt']);
 const client = useSupabaseClient()
 const route = useRoute();
@@ -32,6 +32,7 @@ const shareRef = ref<HTMLElement | null>(null);
 const moreRef = ref<HTMLElement | null>(null);
 const editRef = ref<HTMLElement | null>(null);
 const reportRef = ref<HTMLElement | null>(null);
+const replyLoading = ref(false)
 const reply = ref<Replies | any>({});
 const ignoreElRef = ref();
 
@@ -60,9 +61,16 @@ const onClickOutsideHandler = [
 
 const submitReply = () => {
   if (replyText.value.trim()) {
-    emit('reply', props.comment.id, replyText.value.trim(), null);
-    replyText.value = '';
-    isReplying.value = false;
+    replyLoading.value = true
+    try {
+      emit('reply', props.comment.id, replyText.value.trim(), null);
+      replyText.value = '';
+      isReplying.value = false;
+    } catch (error) {
+      console.error(error)
+    } finally {
+      replyLoading.value = false
+    }
   }
 };
 
@@ -210,8 +218,8 @@ onBeforeUnmount(() => {
   <div :class="['comment-thread relative', {'mb-8' : replies.length > 0}]" :id="comment.id" v-click-outside="onClickOutsideHandler" ref="ignoreElRef">
     <div :class="['flex', {'mt-5' : replies.length > 0}]">
       <div class="mr-3 flex flex-col items-center relative">
-        <NuxtImg :src="ownerOfReplies?.user_metadata?.profile_url" alt="profile"
-          class="w-10 h-10 bg-blue-500 rounded-full" />
+        <NuxtImg format="webp" loading="lazy" :src="ownerOfReplies?.user_metadata?.profile_url" alt="profile"
+          class="w-10 h-10 bg-blue-500 rounded-full object-cover" :placeholder="15" />
 
         <div v-if="replies.length > 0" class="threadline flex items-end justify-end align-start relative bg-neutral-background mt-2" :style="{ height: `${replies.length * 100}%` }">
           <div
@@ -268,7 +276,7 @@ onBeforeUnmount(() => {
                 <ReportModal :isOpenReport="isOpenReport" @toggleAction="toggleAction" :comment="comment" :reply="reply" :currentUser="currentUser" :blog_db="blog_db"/>
               </div>
               <div v-show="isOpenEdit[comment.id]">
-                <EditingCommentModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="comment" :reply="null" :currentUser="currentUser" :blog_db="blog_db"/>
+                <EditingCommentModal :isOpenEdit="isOpenEdit" @toggleAction="toggleAction" :comment="comment" :reply="null" :currentUser="currentUser" :blog_db="blog_db" :list_db="list_db"/>
               </div>
             </div>
           </div>
@@ -290,7 +298,9 @@ onBeforeUnmount(() => {
         </div>
         <div v-if="!isExpanded && replies?.length > 0" class="mt-4 space-y-4 relative">
           <div v-for="reply in replyTree.root.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())" :key="reply.id" :id="reply.id">
-            <NestedComment 
+            <CommentLoading v-if="replyLoading" :comments="[]" :reply="replyTree.root"/>
+            <NestedComment
+              v-else 
               :comment="comment" 
               :reply="reply" 
               :currentUser="currentUser" 
@@ -303,6 +313,7 @@ onBeforeUnmount(() => {
               :isOpenEdit="isOpenEdit"
               :isOpenReport="isOpenReport"
               :blog_db="blog_db"
+              :list_db="list_db"
               @handleDeletingReply="handleDeletingReply"
             />
           </div>

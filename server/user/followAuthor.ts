@@ -35,7 +35,7 @@ export async function followAuthor(currentUser_id: string, x: number, id: string
 
             const {error} = await supabase.from("profiles").update({
                 following_length: + 1
-            }).eq("id", currentUser_id).select("*")
+            }).eq("user_id", currentUser_id).select("*")
 
             if(error) {
                 throw new Error(error.message);
@@ -57,7 +57,7 @@ export async function followAuthor(currentUser_id: string, x: number, id: string
         }
         const {error} = await supabase.from("profiles").update({
                 following_length: + 1
-            }).eq("id", currentUser_id).select("*")
+            }).eq("user_id", currentUser_id).select("*")
             
             if(error) {
                 throw new Error(error.message);

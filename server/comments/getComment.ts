@@ -1,8 +1,21 @@
-export const getComment = async (post_id: string) => {
-    const client = useSupabaseClient()
-    const {data, error} = await client.from("comments").select("*").eq("post_id", post_id).order('created_at', { ascending: true });
-    if(error) {
-        console.error(error.message)
+import type { Database } from "~/supabase";
+
+export const getComment = async (post_id: string | null, list_id: string | null) => {
+    const client = useSupabaseClient<Database>();
+
+    let query = client.from("comments").select("*").order("created_at", { ascending: true });
+
+    if (post_id) {
+        query = query.eq("post_id", post_id);
+    } else if (list_id) {
+        query = query.eq("list_id", list_id);
     }
-    return data
-}
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error(error.message);
+    }
+
+    return data;
+};

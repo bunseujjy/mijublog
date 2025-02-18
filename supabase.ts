@@ -36,7 +36,7 @@ export type Database = {
     Tables: {
       blog_post_reports: {
         Row: {
-          id: string | null
+          id: string
           post_id: string
           report_details: string
           report_reason: string
@@ -45,7 +45,7 @@ export type Database = {
           status: string | null
         }
         Insert: {
-          id?: string | null
+          id?: string
           post_id: string
           report_details: string
           report_reason: string
@@ -54,7 +54,7 @@ export type Database = {
           status?: string | null
         }
         Update: {
-          id?: string | null
+          id?: string
           post_id?: string
           report_details?: string
           report_reason?: string
@@ -74,6 +74,7 @@ export type Database = {
       }
       blog_posts: {
         Row: {
+          allow_comments: boolean | null
           attachment_urls: Json | null
           author_id: string | null
           category_id: string | null
@@ -89,6 +90,9 @@ export type Database = {
           meta_title: string | null
           pin: boolean | null
           publish_date: string | null
+          seo_description: string | null
+          seo_title: string | null
+          settings_updated_at: string | null
           share_count: number | null
           slug: string
           status: string | null
@@ -100,6 +104,7 @@ export type Database = {
           visibility: string | null
         }
         Insert: {
+          allow_comments?: boolean | null
           attachment_urls?: Json | null
           author_id?: string | null
           category_id?: string | null
@@ -115,6 +120,9 @@ export type Database = {
           meta_title?: string | null
           pin?: boolean | null
           publish_date?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          settings_updated_at?: string | null
           share_count?: number | null
           slug: string
           status?: string | null
@@ -126,6 +134,7 @@ export type Database = {
           visibility?: string | null
         }
         Update: {
+          allow_comments?: boolean | null
           attachment_urls?: Json | null
           author_id?: string | null
           category_id?: string | null
@@ -141,6 +150,9 @@ export type Database = {
           meta_title?: string | null
           pin?: boolean | null
           publish_date?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          settings_updated_at?: string | null
           share_count?: number | null
           slug?: string
           status?: string | null
@@ -255,8 +267,10 @@ export type Database = {
           created_at: string | null
           id: string
           likes_count: number
+          list_id: string | null
           post_id: string | null
           status: string | null
+          type: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -265,8 +279,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes_count?: number
+          list_id?: string | null
           post_id?: string | null
           status?: string | null
+          type?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -275,12 +291,21 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes_count?: number
+          list_id?: string | null
           post_id?: string | null
           status?: string | null
+          type?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "user_lists"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comments_post_id_fkey"
             columns: ["post_id"]
@@ -383,6 +408,66 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string | null
+          email_enabled: boolean | null
+          id: string
+          push_enabled: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: number
+          message: string
+          sender_id: string | null
+          status: Database["public"]["Enums"]["notification_status"] | null
+          type: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          message: string
+          sender_id?: string | null
+          status?: Database["public"]["Enums"]["notification_status"] | null
+          type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          message?: string
+          sender_id?: string | null
+          status?: Database["public"]["Enums"]["notification_status"] | null
+          type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       post_categories: {
         Row: {
           category_id: string
@@ -415,31 +500,64 @@ export type Database = {
       }
       profiles: {
         Row: {
-          description: string
-          email: string | null
+          description: string | null
+          email: string
           follower_length: number | null
           following_length: number | null
-          id: string
-          profile_url: string
-          username: string | null
+          id: number
+          profile_url: string | null
+          user_id: string
+          username: string
         }
         Insert: {
-          description: string
-          email?: string | null
+          description?: string | null
+          email: string
           follower_length?: number | null
           following_length?: number | null
-          id: string
-          profile_url: string
-          username?: string | null
+          id?: never
+          profile_url?: string | null
+          user_id: string
+          username: string
         }
         Update: {
-          description?: string
-          email?: string | null
+          description?: string | null
+          email?: string
           follower_length?: number | null
           following_length?: number | null
+          id?: never
+          profile_url?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string | null
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          auth: string
+          created_at?: string | null
+          endpoint: string
           id?: string
-          profile_url?: string
-          username?: string | null
+          p256dh: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          auth?: string
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -450,9 +568,11 @@ export type Database = {
           created_at: string | null
           id: string
           likes_count: number
+          list_id: string | null
           parent_reply_id: string | null
           post_id: string | null
           status: string | null
+          type: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -462,9 +582,11 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes_count?: number
+          list_id?: string | null
           parent_reply_id?: string | null
           post_id?: string | null
           status?: string | null
+          type?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -474,9 +596,11 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes_count?: number
+          list_id?: string | null
           parent_reply_id?: string | null
           post_id?: string | null
           status?: string | null
+          type?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -486,6 +610,13 @@ export type Database = {
             columns: ["comment_id"]
             isOneToOne: false
             referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "replies_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "user_lists"
             referencedColumns: ["id"]
           },
           {
@@ -507,6 +638,7 @@ export type Database = {
       saved_posts: {
         Row: {
           id: string
+          isChecked: boolean | null
           list_id: string | null
           post_id: string
           saved_at: string | null
@@ -514,6 +646,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          isChecked?: boolean | null
           list_id?: string | null
           post_id: string
           saved_at?: string | null
@@ -521,6 +654,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          isChecked?: boolean | null
           list_id?: string | null
           post_id?: string
           saved_at?: string | null
@@ -596,6 +730,7 @@ export type Database = {
           description: string
           id: string
           name: string
+          slug: string | null
           status: string | null
           user_id: string
         }
@@ -604,6 +739,7 @@ export type Database = {
           description: string
           id?: string
           name: string
+          slug?: string | null
           status?: string | null
           user_id: string
         }
@@ -612,6 +748,7 @@ export type Database = {
           description?: string
           id?: string
           name?: string
+          slug?: string | null
           status?: string | null
           user_id?: string
         }
@@ -662,22 +799,14 @@ export type Database = {
         }
         Returns: Json
       }
-      increment:
-        | {
-            Args: {
-              x: number
-              row_id: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              x: number
-              row_id: string
-              user_id: string
-            }
-            Returns: Json
-          }
+      increment: {
+        Args: {
+          x: number
+          row_id: string
+          user_id: string
+        }
+        Returns: Json
+      }
       increment_category_follower:
         | {
             Args: {
@@ -720,7 +849,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      notification_status: "read" | "unread"
+      post_visibility: "public" | "private" | "draft"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -10,6 +10,7 @@ import { BoldIcon, ItalicIcon, LinkIcon, ListIcon, ImageIcon } from "lucide-vue-
 import {  useRoute } from "vue-router";
 import type { Database } from "~/supabase";
 import { useToast } from "../ui/toast";
+import type { BlogData } from "~/lib/type";
 Quill.register("modules/imageResize", ImageResize);
 
 const props = defineProps<{
@@ -25,7 +26,7 @@ const subtitle = ref("");
 const showFloatingToolbar = ref(false);
 const isOpen = ref(false);
 const client = useSupabaseClient<Database>();
-const blog_db = ref<any[]>([]);
+const blog_db = ref<BlogData[]>([]);
 const content = ref("");
 const tags = ref<string[]>([]);
 const newTag = ref("");
@@ -119,16 +120,15 @@ const getBlogPost = async () => {
     const { data, error } = await client
       .from("blog_posts")
       .select("*")
-      .eq("id", props.post_id);
+      .eq("id", props.post_id as string);
 
     if (error) throw error;
 
-    blog_db.value = data;
+    blog_db.value = data as any;
     content.value = data?.[0]?.content || '';
     title.value = data?.[0]?.title || '';
     subtitle.value = data?.[0]?.subtitle || '';
     tags.value = data?.[0]?.tags || [];
-    
     const quill = getQuillInstance();
     if (quill) {
       quill.root.innerHTML = content.value;
@@ -149,7 +149,7 @@ const saveDraft = async () => {
         tags: tags.value,
         status: "draft",
       })
-      .eq("id", props.post_id)
+      .eq("id", props.post_id as string)
       .select("*");
 
     if (error) throw error;
@@ -173,9 +173,9 @@ const publishStory = async (titleDB: string, contentDB: string) => {
         subtitle: subtitle.value,
         content: content.value || contentDB,
         tags: tags.value,
-        status: "pending",
+        status: "posted",
       })
-      .eq("id", props.post_id)
+      .eq("id", props.post_id as string)
       .select("*");
 
     if (error) throw error;
@@ -189,7 +189,7 @@ const publishStory = async (titleDB: string, contentDB: string) => {
 };
 
 const addTag = () => {
-  const tag = newTag.value.trim().toLowerCase();
+  const tag = newTag.value.trim();
   if (tag && !tags.value.includes(tag)) {
     tags.value.push(tag);
     newTag.value = '';
@@ -254,7 +254,7 @@ onUnmounted(() => {
       class="max-w-4xl mx-auto bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-xl rounded-lg overflow-hidden"
     >
       <div v-show="isOpen">
-        <EditModal :isOpen="isOpen" @update:open="isOpen = $event" :blog="blog" />
+        <EditBlogModal :isOpen="isOpen" @update:open="isOpen = $event" :blog="blog" :title="title" :subtitle="subtitle" :tags="tags"/>
       </div>
       <header class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -268,7 +268,7 @@ onUnmounted(() => {
             Save Draft
           </button>
           <button
-            @click="() => publishStory(blog.title, blog.content)"
+            @click="() => publishStory(blog.title, blog.content ?? '')"
             class="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Publish

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /settings
+Disallow: /me/*
+
+Sitemap: https://mijublog.netlify.app

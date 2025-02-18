@@ -17,33 +17,28 @@ import { deleteComment } from '~/server/comments/deleteComment';
 const props = defineProps<{
     response: Comment | null,
     reply: Replies | null,
+    title: string;
 }>()
 
+const emit = defineEmits(['handleDelete'])
+
 const handleDelete = async () => {
-  try {
-    if(props.response?.id) {
-      await deleteComment(props.response.id, null)
-    } else if(props.reply?.id) {
-      await deleteComment(null, props.reply.id)
-    }
-  } catch (error) {
-    console.error(error)
-  }
+  emit('handleDelete')
 }
 </script>
 
 <template>
   <AlertDialog>
     <AlertDialogTrigger as-child>
-      <Button variant="outline" class="!bg-transparent !border-0 ml-2 hover:text-white hover:text-opacity-50">
-        Delete Response
+      <Button variant="outline" class="w-full !justify-start !bg-transparent !border-0 !font-normal hover:text-black hover:!bg-white">
+        <slot name="icon"></slot>  Delete {{ props.title }}
       </Button>
     </AlertDialogTrigger>
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
         <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete this response and remove your data from our servers.
+          This action cannot be undone. This will permanently delete this {{ props.title.charAt(0).toLocaleLowerCase() + props.title.slice(1).toLocaleLowerCase() }} and remove your data from our servers.
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>

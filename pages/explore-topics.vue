@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick, shallowRef } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import type { User } from '@supabase/supabase-js';
@@ -17,7 +16,6 @@ const route = useRoute();
 const { user: currentUser } = useAuth();
 const categories = shallowRef<any[]>([]);
 const category = ref();
-const selectedCategory = ref('');
 const user = shallowRef<User[]>([]);
 const isCategoryLoading = ref(true);
 const isSearching = ref(false);
@@ -177,7 +175,7 @@ function useDebounce(fn: Function, delay: number) {
 
     <h1 class="text-black dark:text-muted text-center text-lg md:text-4xl font-bold mt-14">Explore Topics</h1>
     
-    <form @submit.prevent="searchInput" class="relative w-full mt-10 mx-auto max-w-xl">
+    <form @submit.prevent="searchInput" class="relative w-full my-10 mx-auto max-w-xl">
       <div class="relative">
         <input
           type="text"
@@ -200,7 +198,7 @@ function useDebounce(fn: Function, delay: number) {
       <TransitionGroup
         name="search-results"
         tag="ul"
-        class="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg"
+        class=" z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg"
         v-if="searchResults.length > 0"
       >
         <li

@@ -30,8 +30,8 @@ onMounted(async () => {
                 <PopularCategories v-for="n in placeholderItems" :key="n" />
             </div>
         </div>
-        <ul v-else class="flex items-center flex-wrap">
-            <div class="my-4" v-for="category in categories.slice(0, 6)" :key="category.id">
+        <ul v-else class="flex items-center flex-wrap mb-2">
+            <div class="my-[6px] md:my-4" v-for="category in categories.sort((a,b) => b.post_length - a.post_length).slice(0, 6)" :key="category.id">
                 <li class="bg-purple-400 text-white border border-purple-300 px-4 py-1 rounded-md mr-2">
                     <NuxtLink :to="`/categories/${category?.slug}`">{{ category?.name }}</NuxtLink>
                 </li>

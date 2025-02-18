@@ -2,8 +2,6 @@ import type { Database } from "~/supabase";
 
 export const likePost = async (x: number, id: string, userId: string) => {
   const client = useSupabaseClient<Database>();
-
-
   // Check if the user has already liked the post
   const { data: existingUser } = await client
     .from("like_by")
@@ -34,9 +32,7 @@ export const likePost = async (x: number, id: string, userId: string) => {
 
     if (error) {
       console.error("Error incrementing likes_count:", error.message);
-    } else {
-      console.log("Updated Post Data:", data);  // Log or handle the updated post data
-      return data;
     }
+    return data;
   }
 };

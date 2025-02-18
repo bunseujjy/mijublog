@@ -11,7 +11,7 @@ const route = useRoute()
 const comment_id = computed(() => route.params.comment_id)
 const replies_id = computed(() => route.params.repliesId)
 const post_id = computed(() => route.params.id)
-const {user: currentUser} = useAuth()
+const { user: currentUser } =useAuth();
 const users = ref<User[]>([])
 const comment = ref<Comment | null>(null)
 const replies = ref<Replies[]>([])
@@ -31,10 +31,12 @@ let authorDetails = ref<any>(null);
 const addReply = async (commentId: string, replyText: string, parentReplyId: string | null) => {
   const reply = await postReply(
     blog_db.value?.id as string,
+    null,
     comment_id.value as string,
     currentUser.value?.id as string,
     replyText,
-    parentReplyId
+    parentReplyId,
+    'blog'
   );
   return reply
 };
@@ -94,7 +96,7 @@ const replyTree = computed(() => {
         tree[parentId].push(reply);
     });
     Object.keys(tree).forEach(key => {
-        tree[key].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        tree[key].sort((a, b) => new Date(a.created_at ?? '').getTime() - new Date(b.created_at ?? '').getTime());
     });
     return tree;
 });
@@ -160,10 +162,7 @@ watchEffect(() => {
 
 onMounted(async () => {
   try {
-    await getCommentData()
-    await getRepliesData()
-    await getBlogData()
-    await getCurrentUser(currentUser)
+    await Promise.all([getCommentData(), getRepliesData(), getBlogData()])
     const data = await getAllUser()
     if (data) {
       users.value = [...data]
@@ -180,6 +179,29 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeModalIfOutsideClick);
 });
+
+
+// Watch for route changes to keep `post_id` updated if the route changes
+watch(() => route.params.id, (newId) => {
+  route.params.id = newId
+})
+
+// Watch blog_db and update SEO metadata when it changes
+watch(blog_db, (newBlog) => {
+  if (newBlog) {
+    useSeoMeta({
+      title: `Replies | ${newBlog.title}`,
+      ogTitle: `Replies | ${newBlog.title}`,
+      ogImage: newBlog.featured_image_url || '/open-graph.png',
+      ogDescription: newBlog.subtitle,
+      description: newBlog.subtitle,
+      ogUrl: `${import.meta.env.VITE_BASE_URL}${route.fullPath}`,
+      twitterTitle: `Replies | ${newBlog.title}`,
+      twitterDescription: `Replies | ${newBlog.subtitle}`,
+      twitterImage: newBlog.featured_image_url || '/open-graph.png',
+    })
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -202,7 +224,7 @@ onBeforeUnmount(() => {
       <!-- Render filtered replies -->
       <div v-for="reply in filteredReplies" :key="reply.id" :id="reply.id">
         <NestedComment 
-          :comment="reply" 
+          :comment="null" 
           :reply="reply" 
           :currentUser="currentUser" 
           :users="users"
@@ -214,6 +236,7 @@ onBeforeUnmount(() => {
           :isOpenEdit="isOpenEdit"
           :isOpenReport="isOpenReport"
           :blog_db="blog_db"
+        :list_db="null"
         />
       </div>
     </template>

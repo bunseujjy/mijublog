@@ -17,12 +17,12 @@ const sendMail = async (options: EmailOptions) => {
       user: config.SMTP_USER,
       pass: config.SMTP_PASSWORD
     },
-    debug: true,
-    logger: true
+    debug: false,
+    logger: false
   })
 
   const mailOptions = {
-    from: config.SMTP_USER,
+    from: options.user_email,
     to: config.SMTP_USER,
     subject: options.subject || `Report Comment by ${options.user_email}`,
     html: options.html,

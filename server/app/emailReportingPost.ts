@@ -8,7 +8,8 @@ export default async function emailReportingPost(
     report_details: string,
     user_email: string,
     username: string,
-    topic: string | null
+    topic: string | null,
+    user_id: string,
 ) {
     const client = useSupabaseClient<Database>();
     const emailContent = generateEmailTemplate(post_id, report_reason, report_details, user_email, username, topic!, 'Post');
@@ -29,6 +30,7 @@ export default async function emailReportingPost(
             body: {
                 user_email,
                 html: emailContent.html,
+                user_id,
             },
         });
 

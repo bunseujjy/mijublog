@@ -1,25 +1,18 @@
-import type { BlogData, Category } from '~/lib/type'
+import type {  Category } from '~/lib/type'
 import { getCategories } from '~/server/categories/getCategories'
-import { getRecentPost } from '~/server/post/getRecentBlog'
-
 export const useHomeData = () => {
   const isLoading = ref<boolean>(true)
   const isError = ref<boolean>(false)
-  const blog_db = ref<BlogData[]>([])
   const categories = ref<Category[]>([])
 
   const fetchHomeData = async () => {
-    if (blog_db.value.length > 0) return // Don't fetch if data exists
-    
     isLoading.value = true
     isError.value = false
     
     try {
-      const [recentBlog, category] = await Promise.all([
-        getRecentPost(),
+      const [category] = await Promise.all([
         getCategories(),
       ])
-      blog_db.value = recentBlog || []
       categories.value = category || []
     } catch (err) {
       console.error('Error fetching data:', err)
@@ -30,14 +23,12 @@ export const useHomeData = () => {
   }
 
   const refreshData = async () => {
-    blog_db.value = []
     await fetchHomeData()
   }
 
   return {
     isLoading,
     isError,
-    blog_db,
     categories,
     fetchHomeData,
     refreshData

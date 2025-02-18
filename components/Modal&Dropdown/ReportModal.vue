@@ -6,10 +6,10 @@
 
   const props = defineProps<{
     isOpenReport: Record<string, boolean>,
-    comment: Comment,
-    reply: Replies,
+    comment: Comment | null,
+    reply: Replies | null,
     currentUser: User | null,
-    blog_db: BlogData
+    blog_db: BlogData | null
   }>()
 
   const emit = defineEmits(['toggleAction', 'submit'])
@@ -26,13 +26,14 @@
     if (reason.value) {
       try {
         await emailReporting(
-          props.comment.id || props.reply.id,
+          props.comment?.id || props.reply?.id || '',
           props.currentUser?.id as string,
           reason.value,
           details.value,
           props.currentUser?.user_metadata.email,
           props.currentUser?.user_metadata.username,
-          props.blog_db.title
+          props.blog_db?.title ?? '',
+          props.currentUser?.id as string
         );
         resetForm();
       } catch (error) {
@@ -78,7 +79,7 @@
               placeholder="Please provide any additional information about your report..."></textarea>
           </div>
           <div class="flex justify-end space-x-3">
-            <button type="button" @click="toggleAction(comment.id || reply.id, 'report')"
+            <button type="button" @click="toggleAction(comment?.id || reply?.id || '', 'report')"
               class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               Cancel
             </button>

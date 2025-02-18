@@ -50,9 +50,9 @@ if(!editedContent?.value) {return null}
     // Simulated API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     if(props.response?.id) {
-                await updatingComments(props.response?.id, editedContent.value, props.author?.id as string, props.response.post_id)
+                await updatingComments(props.response?.id, editedContent.value, props.author?.id as string, props.response.post_id, props.response.list_id)
             } else if(props.reply?.id) {
-                await updatingReply(editedContent.value, props.reply.id, props.author?.id as string, props.reply?.post_id)
+                await updatingReply(editedContent.value, props.reply.id, props.author?.id as string, props.reply?.post_id, props.reply.list_id)
             }
     toast({ description: 'Response updated successfully' });
     emit('close');

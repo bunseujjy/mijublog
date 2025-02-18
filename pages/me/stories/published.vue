@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BlogNavigation from '~/components/Blog/BlogNavigation.vue';
 
-const { user: currentUser } = useAuth();
+const { user: currentUser } =useAuth();
 const { 
   isLoading,
   error,
@@ -18,6 +18,12 @@ const publishedPosts = computed(() => {
   if (!currentUser.value?.id) return [];
   return filterPostsByStatus(currentUser.value.id, 'posted');
 });
+useSeoMeta({
+        title: `${currentUser?.value?.user_metadata?.username} | Published`,
+        ogTitle: `${currentUser?.value?.user_metadata?.username} | Published`,
+        ogUrl: `${import.meta.env.VITE_BASE_URL}/me/stories/published`,
+        twitterTitle: `${currentUser?.value?.user_metadata?.username} | Published`,
+    })
 </script>
 
 <template>
@@ -38,9 +44,9 @@ const publishedPosts = computed(() => {
             
             <template v-else-if="publishedPosts.length">
               <li v-for="post in publishedPosts" :key="post.id"
-                                class="border-b border-b-muted pb-5 transition-all duration-300 ease-in-out mt-5">
-                                <BlogPost :post="post" :author="findPostAuthor(post.author_id)"/>
-                            </li>
+                  class="border-b border-b-muted pb-5 transition-all duration-300 ease-in-out mt-5">
+                  <BlogPost :post="post" :author="findPostAuthor(post.author_id)"/>
+              </li>
             </template>
 
             <template v-else>

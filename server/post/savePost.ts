@@ -6,7 +6,8 @@ export async function savePost(user_id: string, post_id: string, list_id: string
         const {data, error} = await client.from("saved_posts").insert({
             user_id,
             post_id,
-            list_id
+            list_id,
+            isChecked: true,
         }).select("*")
         if(error) {
             throw new Error(error.message)

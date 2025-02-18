@@ -128,7 +128,7 @@ const handleSignin = async () => {
               />
               <span class="ml-2 text-sm text-gray-400">Remember me</span>
             </label>
-            <a href="#" class="text-sm text-purple-400 hover:text-purple-300"
+            <a href="/forget_password" class="text-sm text-purple-400 hover:text-purple-300"
               >Forgot password?</a
             >
           </div>

@@ -32,7 +32,8 @@ const submitReport = async () => {
           description.value,
           props.currentUser?.user_metadata.email,
           props.currentUser?.user_metadata.username,
-          props.blog_db.title
+          props.blog_db.title,
+          props.currentUser?.id as string
         );
         closeModal();
       } catch (error) {
