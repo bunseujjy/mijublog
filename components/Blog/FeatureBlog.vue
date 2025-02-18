@@ -101,33 +101,24 @@ const isContentLoading = computed(() => props.isLoading || localLoading.value);
           No featured blogs available at the moment.
         </div>
         <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <div
-            v-if="featuredBlogs.length > 0"
-            class="relative h-[400px] sm:h-[500px]"
-            @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false"
-          >
+          <div v-if="featuredBlogs.length > 0" class="relative h-[400px] sm:h-[500px]" @mouseenter="isHovering = true"
+            @mouseleave="isHovering = false">
             <TransitionGroup name="fade">
-              <div
-                v-for="(blog, index) in featuredBlogs"
-                :key="blog.id"
-                v-show="index === currentIndex"
-                class="absolute inset-0"
-              >
+              <div v-for="(blog, index) in featuredBlogs" :key="blog.id" v-show="index === currentIndex"
+                class="absolute inset-0">
                 <div class="relative h-full overflow-hidden rounded-lg shadow-lg">
-                  <NuxtImg format="webp" loading="lazy"
-                    :src="blog.featured_image_url || '/post_placeholder.png'"
-                    :alt="blog.title"
-                    class="absolute inset-0 w-full h-full object-cover"
-                  />
+                  <NuxtImg format="webp" loading="lazy" :src="blog.featured_image_url || '/post_placeholder.png'"
+                    :alt="blog.title" class="absolute inset-0 w-full h-full object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                   <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 flex flex-col justify-end">
                     <NuxtLink :to="`/categories/${blog.tags[0].toLowerCase()}`">
-                      <span class="inline-block px-2 py-1 mb-2 text-xs font-semibold bg-purple-500 text-white rounded-full">
+                      <span
+                        class="inline-block px-2 py-1 mb-2 text-xs font-semibold bg-purple-500 text-white rounded-full">
                         {{ blog.tags[0] }}
                       </span>
                     </NuxtLink>
-                    <NuxtLink :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata?.username}/${blog.id}`">
+                    <NuxtLink
+                      :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata?.username}/${blog.id}`">
                       <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 line-clamp-2">
                         {{ blog.title }}
                       </h3>
@@ -142,8 +133,7 @@ const isContentLoading = computed(() => props.isLoading || localLoading.value);
                       </p>
                       <NuxtLink
                         :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata?.username}/${blog.id}`"
-                        class="px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors text-sm sm:text-base"
-                      >
+                        class="px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors text-sm sm:text-base">
                         Read More
                       </NuxtLink>
                     </div>
@@ -151,34 +141,22 @@ const isContentLoading = computed(() => props.isLoading || localLoading.value);
                 </div>
               </div>
             </TransitionGroup>
-            <button
-              v-if="featuredBlogs.length > 1"
-              @click="prevSlide"
-              class="absolute top-1/2 left-2 sm:left-4 -translate-y-1/2 z-30 p-1 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-            >
+            <button v-if="featuredBlogs.length > 1" @click="prevSlide"
+              class="absolute top-1/2 left-2 sm:left-4 -translate-y-1/2 z-30 p-1 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
               <ChevronLeft class="h-4 w-4 sm:h-6 sm:w-6" />
               <span class="sr-only">Previous slide</span>
             </button>
-            <button
-              v-if="featuredBlogs.length > 1"
-              @click="nextSlide"
-              class="absolute top-1/2 right-2 sm:right-4 -translate-y-1/2 z-30 p-1 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-            >
+            <button v-if="featuredBlogs.length > 1" @click="nextSlide"
+              class="absolute top-1/2 right-2 sm:right-4 -translate-y-1/2 z-30 p-1 sm:p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
               <ChevronRight class="h-4 w-4 sm:h-6 sm:w-6" />
               <span class="sr-only">Next slide</span>
             </button>
           </div>
           <div class="space-y-4">
-            <div
-              v-for="blog in featuredBlogs.slice(1)"
-              :key="blog.id"
-              class="flex flex-col sm:flex-row overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-md"
-            >
-              <NuxtImg format="webp" loading="lazy"
-                :src="blog.featured_image_url || '/post_placeholder.png'"
-                :alt="blog.title"
-                class="w-full sm:w-[120px] md:w-[200px] h-[200px] object-cover"
-              />
+            <div v-for="blog in featuredBlogs.slice(1)" :key="blog.id"
+              class="flex flex-col sm:flex-row overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-md">
+              <NuxtImg format="webp" loading="lazy" :src="blog.featured_image_url || '/post_placeholder.png'"
+                :alt="blog.title" class="w-full sm:w-[120px] md:w-[200px] h-[200px] object-cover" />
               <div class="flex flex-col justify-between flex-1 p-4">
                 <NuxtLink :to="`/categories/${blog.tags[0].toLowerCase()}`">
                   <span class="inline-block px-2 py-1 mb-2 text-xs font-semibold bg-purple-500 text-white rounded-full">
@@ -188,8 +166,7 @@ const isContentLoading = computed(() => props.isLoading || localLoading.value);
                 <div>
                   <NuxtLink
                     :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata?.username}/${blog.id}`"
-                    class="block text-base sm:text-lg font-semibold mb-2 text-gray-900 dark:text-white line-clamp-2"
-                  >
+                    class="block text-base sm:text-lg font-semibold mb-2 text-gray-900 dark:text-white line-clamp-2">
                     {{ blog.title }}
                   </NuxtLink>
                   <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
@@ -202,8 +179,7 @@ const isContentLoading = computed(() => props.isLoading || localLoading.value);
                   </p>
                   <NuxtLink
                     :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata?.username}/${blog.id}`"
-                    class="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:underline"
-                  >
+                    class="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:underline">
                     Read More
                   </NuxtLink>
                 </div>
