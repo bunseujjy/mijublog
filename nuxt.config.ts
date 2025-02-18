@@ -10,6 +10,9 @@ export default defineNuxtConfig({
   experimental: {
     renderJsonPayloads: false,
   },
+  image: {
+    provider: 'netlify',
+  },
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   modules: [
