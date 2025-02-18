@@ -12,6 +12,7 @@ export default defineNuxtConfig({
   },
   image: {
     provider: 'netlify',
+    domains: ["https://qrkjrqgpqdywppehdppq.supabase.co"]
   },
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
