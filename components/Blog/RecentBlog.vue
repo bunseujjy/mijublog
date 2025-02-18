@@ -171,7 +171,7 @@
                 <div class="text-black dark:text-white flex-grow space-y-2">
                   <div class="flex items-center">
                     <NuxtImg format="webp" loading="lazy" :src="getAuthorDetails(users, blog.author_id)?.user_metadata
-                        ?.profile_url || '/default-pf.jpg'
+                      ?.profile_url || '/default-pf.jpg'
                       " :alt="'blog ' + blog.id" class="size-[35px] bg-center object-cover rounded-full mt-4 md:mt-0"
                       :placeholder="15" sizes="100vw sm:50vw md:35px" quality="80" />
                     <p class="pl-2">
@@ -207,8 +207,7 @@
                 </div>
                 <div class="w-full md:w-[250px] aspect-[5/3] flex-shrink-0">
                   <NuxtImg format="webp" loading="lazy" :src="blog.featured_image_url || '/post_placeholder.png'"
-                  :alt="blog.title" class="w-full h-full object-cover" :placeholder="15"
-                    sizes="(min-width: 768px) 250px, 100vw" />
+                    :alt="blog.title" class="w-full h-full object-cover" sizes="(min-width: 768px) 250px, 100vw" />
                 </div>
               </div>
             </div>
@@ -286,7 +285,7 @@
               <div class="flex-shrink-0 mr-1">
                 <NuxtLink :to="`/@${getAuthorDetails(users, rec.author_id)?.user_metadata?.username}`">
                   <NuxtImg format="webp" loading="lazy" :src="getAuthorDetails(users, rec.author_id)?.user_metadata
-                      ?.profile_url || '/default-pf.jpg'
+                    ?.profile_url || '/default-pf.jpg'
                     " :alt="`${getAuthorDetails(users, rec.author_id)?.user_metadata?.username}'s profile`"
                     class="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700" />
                 </NuxtLink>
