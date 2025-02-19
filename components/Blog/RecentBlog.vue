@@ -207,7 +207,7 @@
                 </div>
                 <div class="w-full md:w-[250px] aspect-[5/3] flex-shrink-0">
                   <NuxtImg format="webp" loading="lazy" :src="blog.featured_image_url || '/post_placeholder.png'"
-                    :alt="blog.title" class="w-full h-full object-cover" sizes="(min-width: 768px) 250px, 100vw" />
+                    :alt="blog.title" class="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
