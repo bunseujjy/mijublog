@@ -31,7 +31,7 @@ onMounted(async () => {
 <template>
   <div class="flex items-center justify-between">
     <div>
-      <h3 class="text-lg font-medium">Email Notifications</h3>
+      <h3 class="text-lg font-medium text-white">Email Notifications</h3>
       <p class="text-sm text-gray-500">Receive notifications via email</p>
     </div>
     <Switch

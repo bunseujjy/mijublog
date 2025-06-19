@@ -115,6 +115,7 @@ export const useAuth = () => {
     try {
       const data = await getAllUser();
       users.value = data || [];
+      console.log(users.value, "s")
     } catch (error: any) {
       console.error("Failed to fetch users:", error);
     }

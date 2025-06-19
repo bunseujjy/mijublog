@@ -82,7 +82,7 @@ watch(
       try {
         isBlogLoading.value = true;
         showErrorMsg.value = false;
-        const blog_data = await getBlogByCategories(category.value?.name);
+        const blog_data = await getBlogByCategories(category.value?.name.toLowerCase());
         if (blog_data) {
           blog_db.value = blog_data;
         } else {

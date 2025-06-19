@@ -50,6 +50,7 @@
       .replace(/[^\w\-]+/g, "") // Remove all non-word chars
       .replace(/\-\-+/g, "-"); // Replace multiple - with single -
   };
+
 </script>
 
 <template>
@@ -162,8 +163,8 @@
               </div>
               <div class="w-full md:w-[250px] aspect-[5/3] flex-shrink-0">
                 <NuxtLink :to="`/post/@${getAuthorDetails(users, blog.author_id)?.user_metadata.username}/${blog.id}`">
-                  <NuxtImg format="webp" loading="lazy" :src="blog.featured_image_url || '/post_placeholder.png'" :alt="'blog ' + blog.id"
-                    class="w-full h-full object-cover" :placeholder="15" sizes="(min-width: 768px) 250px, 100vw" />
+                  <img :src="blog.featured_image_url || '/post_placeholder.png'" :alt="'blog ' + blog.id"
+                    class="w-full h-full object-cover"  sizes="(min-width: 768px) 250px, 100vw" />
                 </NuxtLink>
               </div>
             </div>

@@ -30,6 +30,7 @@ export const useBlogPagination = (blogs: BlogData[]) => {
     }
   };
 
+  console.log(paginatedBlogs)
   return {
     page,
     isLoading,

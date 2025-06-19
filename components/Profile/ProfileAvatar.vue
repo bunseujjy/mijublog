@@ -50,7 +50,7 @@ const handleSignOut = async () => {
     >
       <div class="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden">
         <NuxtImg format="webp" loading="lazy" 
-          :src="user.user_metadata?.profile_url || '/path/to/default-avatar.png'"
+          :src="user.user_metadata?.profile_url || '/default-pf.png'"
           :alt="user.user_metadata?.username"
           class="w-full h-full object-cover border-2 border-gray-200 rounded-full" 
         />

@@ -30,11 +30,10 @@ defineProps<{
           </NuxtLink>
         </div>
         <div class="w-full md:w-[250px] aspect-[5/3] flex-shrink-0">
-            <NuxtImg format="webp" loading="lazy" 
+            <img format="webp" loading="lazy" 
               :src="post.featured_image_url || '/post_placeholder.png'" 
               :alt="'post ' + post.id"
               class="w-full h-full object-cover"
-              :placeholder="15" 
               sizes="(min-width: 768px) 250px, 100vw" 
             />
           </div>

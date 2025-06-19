@@ -85,32 +85,37 @@
       .replace(/\-\-+/g, "-"); // Replace multiple - with single -
   };
 
-  onMounted(async () => {
-    isLoading.value = true;
-    try {
-      const [categoriesData, userData] = await Promise.all([
-        getCategories(),
-        getAllUser(),
-      ]);
+  // Modify your onMounted and retryFetch functions to add better error handling
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    const [categoriesData, userData] = await Promise.all([
+      getCategories().catch(err => {
+        console.error("Categories fetch error:", err);
+        return null;
+      }),
+      getAllUser().catch(err => {
+        console.error("Users fetch error:", err);
+        return null;
+      }),
+    ]);
 
-      if (categoriesData) {
-        categories.value = categoriesData;
-      } else {
-        throw new Error("Failed to fetch categories");
-      }
-
-      if (userData) {
-        user.value = Array.isArray(userData) ? userData : [userData];
-      } else {
-        throw new Error("Failed to fetch users");
-      }
-    } catch (err) {
-      console.error("Failed to fetch data:", err);
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
+    if (categoriesData && Array.isArray(categoriesData)) {
+      categories.value = categoriesData;
+      console.log("Categories loaded:", categories.value.length);
+    } else {
+      console.warn("No categories data received");
+      categories.value = []; // Ensure it's at least an empty array
     }
-  });
+
+    // ... rest of your user handling code
+  } catch (err) {
+    console.error("Failed to fetch data:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>

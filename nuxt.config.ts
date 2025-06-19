@@ -11,8 +11,7 @@ export default defineNuxtConfig({
     renderJsonPayloads: false,
   },
   image: {
-    provider: 'netlify',
-    domains: ["https://qrkjrqgpqdywppehdppq.supabase.co"]
+    domains: ["https://ffxuplpinijsfgooxfac.supabase.co"]
   },
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
@@ -100,12 +99,15 @@ export default defineNuxtConfig({
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     googleCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     public: {
       VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
       gtagId: process.env.gtagId,
       propertyId: process.env.propertyId,
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       baseURL: process.env.APP_DOMAIN || "http://localhost:3000",
       motion: {
         directives: {

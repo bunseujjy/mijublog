@@ -81,7 +81,7 @@ onMounted(async () => {
 <template>
   <div class="flex items-center justify-between">
     <div>
-      <h3 class="text-lg font-medium">Push Notifications</h3>
+      <h3 class="text-lg font-medium text-white">Push Notifications</h3>
       <p class="text-sm text-gray-500">Receive notifications in your browser</p>
     </div>
     <Switch
